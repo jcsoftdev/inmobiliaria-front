@@ -24,7 +24,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@libs/ui": ["../../packages/ui/src"],
+      "@libs/utils": ["../../packages/utils/src"],
     },
     "outDir": "../../dist"
   },
