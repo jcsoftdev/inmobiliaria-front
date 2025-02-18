@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from '@libs/ui'
+import { Button, Alert } from '@libs/ui'
 import './App.css'
 
 function App() {
@@ -19,6 +19,12 @@ function App() {
       <Button variant='alternative'  onClick={() => setCount(count + 1)}>
         Count: {count}
       </Button>
+
+      <Alert variant='warning' className='mb-4'>
+        
+        
+        <a href="https://flowbite.com/application-ui/demo/users/list/"><span className="font-medium">Check more here</span></a>
+      </Alert>
     </>
   )
 }
