@@ -1,22 +1,21 @@
 import './App.css'
 import { HeroUIProvider } from '@heroui/system'
 
-import { Button } from '@heroui/react'
-import { formatDate } from '@libs/utils'
+import Wrapper from '@components/wrapper'
+import PropertiesList from '@modules/properties/properties-list'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 function App() {
   return (
-    <HeroUIProvider>
-      <div className="App">
-      <Button color="default">Default</Button>
-      <Button color="primary">Primary</Button>
-      <Button color="secondary">Secondary</Button>
-      <Button color="success">Success</Button>
-      <Button color="warning">Warning</Button>
-      <Button color="danger">
-        {formatDate(new Date())}
-      </Button>
-      </div>
-    </HeroUIProvider>
+    <QueryClientProvider client={queryClient}>
+      <HeroUIProvider>
+        <Wrapper className="py-8">
+          <h2 className="text-xl">Propiedades</h2>
+          <PropertiesList />
+        </Wrapper>
+      </HeroUIProvider>
+    </QueryClientProvider>
   )
 }
 
