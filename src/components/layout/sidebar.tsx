@@ -1,5 +1,6 @@
 import { NavLink } from "react-router"
 import { twMerge } from "tailwind-merge"
+
 import img from '../../assets/logo.png'
 
 interface SidebarProps {

@@ -1,13 +1,14 @@
-import { Layout } from '@components/layout'
 import './App.css'
+
+import { ToastProvider } from '@heroui/react'
 import { HeroUIProvider } from '@heroui/system'
-import Footer from '@components/layout/footer'
-import Header from '@components/layout/header'
-import Sidebar from '@components/layout/sidebar'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createPortal } from 'react-dom'
 import { BrowserRouter, Route, Routes } from 'react-router'
+
+import { Footer, Header, Layout, Sidebar } from '@components/layout'
 import { Dashboard } from '@components/modules/dashboard'
 import { PropertiesModule } from '@components/modules/properties'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const client = new QueryClient()
 
@@ -16,14 +17,11 @@ function App() {
     <QueryClientProvider client={client}>
       <BrowserRouter>
         <HeroUIProvider>
+          {createPortal(<ToastProvider placement="top-right" />, document.body)}
           <Layout footer={Footer} header={Header} sidebar={Sidebar}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/properties" element={<PropertiesModule />} />
-              {/* <Route path="dashboard" element={<Dashboard />}>
-              <Route index element={<RecentActivity />} />
-              <Route path="project/:id" element={<Project />} />
-              </Route> */}
             </Routes>
           </Layout>
         </HeroUIProvider>
