@@ -25,6 +25,11 @@
     "baseUrl": ".",
     "paths": {
       "@libs/utils": ["../../packages/utils/src"],
+      "@components/*": ["./src/components/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@contracts/*": ["./src/contracts/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@services/*": ["./src/services/*"],
     },
     "outDir": "../../dist"
   },

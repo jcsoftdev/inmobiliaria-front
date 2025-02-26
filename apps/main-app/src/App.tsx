@@ -1,22 +1,34 @@
+import { Layout } from '@components/layout'
 import './App.css'
 import { HeroUIProvider } from '@heroui/system'
+import Footer from '@components/layout/footer'
+import Header from '@components/layout/header'
+import Sidebar from '@components/layout/sidebar'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import { Dashboard } from '@components/modules/dashboard'
+import { PropertiesModule } from '@components/modules/properties'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { Button } from '@heroui/react'
-import { formatDate } from '@libs/utils'
+const client = new QueryClient()
+
 function App() {
   return (
-    <HeroUIProvider>
-      <div className="App">
-      <Button color="default">Default</Button>
-      <Button color="primary">Primary</Button>
-      <Button color="secondary">Secondary</Button>
-      <Button color="success">Success</Button>
-      <Button color="warning">Warning</Button>
-      <Button color="danger">
-        {formatDate(new Date())}
-      </Button>
-      </div>
-    </HeroUIProvider>
+    <QueryClientProvider client={client}>
+      <BrowserRouter>
+        <HeroUIProvider>
+          <Layout footer={Footer} header={Header} sidebar={Sidebar}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/properties" element={<PropertiesModule />} />
+              {/* <Route path="dashboard" element={<Dashboard />}>
+              <Route index element={<RecentActivity />} />
+              <Route path="project/:id" element={<Project />} />
+              </Route> */}
+            </Routes>
+          </Layout>
+        </HeroUIProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 
