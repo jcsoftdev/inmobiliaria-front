@@ -6,7 +6,11 @@ export const getProperties = async () => {
       .then((res) => res.json())
       .then((data) => {
         return data
-      })
+      }).catch((error) => {
+        console.error('Error:', error)
+        throw error
+      }
+      )
   return response
 }
 

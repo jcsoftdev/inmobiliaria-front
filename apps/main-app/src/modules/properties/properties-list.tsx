@@ -37,7 +37,7 @@ const tableColumns = [
 ]
 
 const statusMap = {
-  active: <Chip color="success">Activo</Chip>,
+  active: <Chip color="success" >Activo</Chip>,
   reserved: <Chip color="warning">Reservado</Chip>,
   sold: <Chip color="danger">Vendido</Chip>,
   available: <Chip color="success">Disponible</Chip>,
@@ -54,7 +54,9 @@ const typeMap = {
 
 
 const PropertiesList = () => {
-  const {data: properties, error, isLoading} = useQuery<Property[]>({ queryKey: ['properties'], queryFn: async () => await getProperties() })
+  const {data: properties, error, isLoading} = useQuery<{
+    data: Property[]
+  }>({ queryKey: ['properties'], queryFn: async () => await getProperties() })
 
   if (isLoading) {
     return <p>Cargando...</p>
@@ -65,6 +67,8 @@ const PropertiesList = () => {
       {error.message}
     </p>
   }
+
+  console.log({properties, error, isLoading})
 
   return (
       <Table aria-label="Propiedades" className="pt-4">
@@ -77,7 +81,7 @@ const PropertiesList = () => {
               }
             }
           </TableHeader>
-          <TableBody items={properties}>
+          <TableBody items={properties?.data}>
             {
               (property) => {
                   console.log({property}, getKeyValue(property, 'title'))
@@ -87,8 +91,8 @@ const PropertiesList = () => {
 
                     if (columnKey === 'status') {
                       return (
-                        <TableCell key={columnKey}>
-                          {statusMap[(getKeyValue(property, columnKey) as string).toLowerCase() as keyof typeof statusMap]}
+                        <TableCell key={columnKey} className="text-white" >
+                          <span className="!text-white">{statusMap[(getKeyValue(property, columnKey) as string).toLowerCase() as keyof typeof statusMap]}</span>
                         </TableCell>
                       )
                     }
@@ -104,9 +108,9 @@ const PropertiesList = () => {
                     if (columnKey === 'price') {
                       return (
                         <TableCell key={columnKey}>
-                          {getKeyValue(property, columnKey).split(',').map((feature: string) => (
-                            <Chip key={feature} className="mr-2" variant='light' classNames={{content:'text-left p-0'}}>
-                             S/ {feature}
+                          {`${getKeyValue(property, columnKey)}`.toString()?.split?.(',').map((price: string) => (
+                            <Chip key={price} className="mr-2" variant='light' classNames={{content:'text-left p-0'}}>
+                             S/ {price}
                             </Chip>
                           ))}
                         </TableCell>
