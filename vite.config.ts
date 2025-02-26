@@ -1,14 +1,14 @@
-import { defineConfig } from 'vite'
+import path from 'path'
+
 import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from 'vite'
 // TODO: upgrade to v4 when heroui is released
 // import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
-      '@libs/utils': path.resolve(__dirname, '../../packages/utils/src'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@constants': path.resolve(__dirname, 'src/constants'),
       '@modules': path.resolve(__dirname, 'src/modules'),
@@ -24,6 +24,6 @@ export default defineConfig({
   build: {
     sourcemap: true,
     target: 'esnext',
-    outDir: '../../dist',
+    outDir: './dist',
   },
 })
