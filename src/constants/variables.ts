@@ -1,3 +1,5 @@
+const API_BASE_USERS_MANAGEMNET = import.meta.env.VITE_BASE_URL
 export const envVariables = {
-  API_URL: import.meta.env.VITE_MS_PROPERTIES_URL,
+  API_URL_PROPERTIES: import.meta.env.VITE_MS_PROPERTIES_URL,
+  API_URL_AGENCIES: `${API_BASE_USERS_MANAGEMNET}/agencies`
 }

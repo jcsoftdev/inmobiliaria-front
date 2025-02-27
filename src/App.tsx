@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 
 import { Footer, Header, Layout, Sidebar } from '@components/layout'
+import {AgenciesModule } from '@components/modules/agencies'
 import { Dashboard } from '@components/modules/dashboard'
 import { PropertiesModule } from '@components/modules/properties'
 import PropertyForm from '@components/modules/properties/property-form'
@@ -22,11 +23,13 @@ const Router = () => {
       <Routes location={background || location}>
         <Route path="/" element={<Dashboard />} />
         <Route path="properties" element={<PropertiesModule />} />
+        <Route path="agencia" element={<AgenciesModule />} />
       </Routes>
 
       {/* Renderizar el modal encima si hay un background */}
       {background && (
         <Routes>
+          <Route path="agencia/register" element={<PropertyForm />} />
           <Route path="properties/register" element={<PropertyForm />} />
         </Routes>
       )}

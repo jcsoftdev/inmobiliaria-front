@@ -15,7 +15,7 @@ export const getProperties = async ({
   await new Promise((resolve) => setTimeout(resolve, 2000))
 
   const response = await httpRequest.get<PropertiesResponse>(
-    envVariables.API_URL + `?page=${page}&perPage=${perPage}`
+    envVariables.API_URL_PROPERTIES + `?page=${page}&perPage=${perPage}`
   )
   return response
 }
@@ -23,7 +23,7 @@ export const getProperties = async ({
 export const saveProperty = async (
   property: Omit<Property, 'id' | 'user_id' | 'created_at' | 'status'>
 ) => {
-  const response = await httpRequest.post(envVariables.API_URL, {
+  const response = await httpRequest.post(envVariables.API_URL_PROPERTIES, {
     ...property,
     status: 'available',
     agencyId: 1,
