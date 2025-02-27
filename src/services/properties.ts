@@ -1,8 +1,9 @@
 import { envVariables } from '@constants/variables'
 
 import { Property } from '@contracts/properties'
+import { PropertiesResponse } from '@contracts/properties.response'
 
-export const getProperties = async () => {
+export const getProperties = async (): Promise<PropertiesResponse> => {
   const response = await fetch(envVariables.API_URL + '?page=3')
     .then((res) => res.json())
     .then((data) => {
