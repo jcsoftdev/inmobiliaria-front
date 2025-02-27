@@ -9,9 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
+import { useAppStore } from '@store/index'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
-import { Property } from '@contracts/properties'
+import { PropertiesResponse } from '@contracts/properties.response'
 
 import { getProperties } from '@services/properties'
 
@@ -72,9 +74,23 @@ const PropertiesList = () => {
     data: properties,
     error,
     isLoading,
-  } = useQuery<{
-    data: Property[]
-  }>({ queryKey: ['properties'], queryFn: async () => await getProperties() })
+  } = useQuery<PropertiesResponse>({
+    queryKey: ['properties'],
+    queryFn: async () => await getProperties(),
+  })
+
+  const { setProperties } = useAppStore()
+
+  useEffect(() => {
+    if (properties) {
+      setProperties({
+        data: properties.data,
+        meta: properties.meta,
+        isLoading,
+        isError: !!error,
+      })
+    }
+  }, [properties, setProperties, isLoading, error])
 
   if (isLoading) {
     return <p>Cargando...</p>

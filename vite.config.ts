@@ -14,6 +14,7 @@ export default defineConfig({
       '@modules': path.resolve(__dirname, 'src/modules'),
       '@contracts': path.resolve(__dirname, 'src/contracts'),
       '@services': path.resolve(__dirname, 'src/services'),
+      '@store': path.resolve(__dirname, 'src/store'),
     },
   },
   plugins: [
