@@ -1,9 +1,10 @@
-import { PropertiesState } from '@store/types'
+import { AgenciesState, PropertiesState } from '@store/types'
 import { create, StateCreator } from 'zustand'
 import { persist, devtools } from 'zustand/middleware'
 
 type AppState = {
   properties: PropertiesState
+  agencies: AgenciesState
 }
 
 // type AppSetters = {
@@ -26,6 +27,14 @@ const initialState: AppState = {
       // amenities: '',
     },
   },
+  agencies: {
+    isLoading: false,
+    isError: false,
+    meta: undefined,
+    data: undefined,
+    registration: {
+    }
+  }
 }
 
 const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
@@ -33,6 +42,12 @@ const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
     set((prev) => {
       return {
         properties: { ...prev.properties, ...properties },
+      }
+    }),
+  setAgencies: (agencies: Partial<AgenciesState>) =>
+    set((prev) =>{
+      return {
+        agencies: { ...prev.agencies, ...agencies},
       }
     }),
   setPropertiesRegistration: (
@@ -49,6 +64,20 @@ const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
         },
       }
     }),
+  setAgenciesRegistration: (
+    registration: Partial<AgenciesState['registration']>  
+  ) => 
+    set((state) => {
+      return {
+        agencies: {
+          ...state?.agencies,
+          registration: {
+            ...state?.agencies?.registration,
+            ...registration,
+          }
+        }
+      }
+    })
 })
 
 export const useAppStore = create<

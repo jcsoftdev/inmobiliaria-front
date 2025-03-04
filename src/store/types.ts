@@ -1,3 +1,4 @@
+import { AgenciesResponse } from '@contracts/agencies.response'
 import { PropertiesResponse } from '@contracts/properties.response'
 
 export type PropertiesState = {
@@ -15,4 +16,18 @@ export type PropertiesState = {
   }
 }
 
+export type AgenciesState = {
+  data?: AgenciesResponse['data']
+  meta?: AgenciesResponse['meta']
+  isLoading?: boolean
+  isError?: boolean
+  registration: {
+    name?: string
+    address?: string
+    phone?: string
+    email?: string
+  }
+}
+
 export type SetProperties = (properties: PropertiesState) => void
+export type SetAgencies = (agencies: AgenciesState) => void
