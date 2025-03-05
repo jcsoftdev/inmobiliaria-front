@@ -121,13 +121,13 @@ const SkeletonTable = ({ columns: c }: { columns: number }) => {
   )
 }
 
-const SkeletonPagination = () => {
+const SkeletonPagination = ({ total }: { total: number }) => {
   return (
     <div className="py-4">
       <Pagination
         color="primary"
         page={6}
-        total={10}
+        total={total}
         onChange={() => {}}
         renderItem={() => (
           <Skeleton className="rounded-lg w-9">
@@ -319,7 +319,7 @@ const PropertiesList = () => {
           />
         </div>
       ) : (
-        <SkeletonPagination />
+        <SkeletonPagination total={+(properties?.meta?.lastPage ?? 0)} />
       )}
     </div>
   )

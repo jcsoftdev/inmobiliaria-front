@@ -1,3 +1,4 @@
+import { routes } from '@router/routes'
 import { NavLink } from 'react-router'
 import { twMerge } from 'tailwind-merge'
 
@@ -17,7 +18,7 @@ const Sidebar = ({ className, ...props }: SidebarProps) => {
       <img src={img} alt="logo" />
       <ul className="flex flex-col gap-4">
         <li>
-          <NavLink className={'p-4'} to="/">
+          <NavLink className={'p-4'} to={routes.dashboard}>
             Dashboard
           </NavLink>
         </li>
@@ -32,12 +33,12 @@ const Sidebar = ({ className, ...props }: SidebarProps) => {
           </NavLink>
         </li>
         <li>
-          <NavLink className={'p-4'} to="/agencia">
+          <NavLink className={'p-4'} to={routes.agencies.home}>
             Agencia
           </NavLink>
         </li>
         <li>
-          <NavLink className={'p-4'} to="/properties">
+          <NavLink className={'p-4'} to={routes.properties.home}>
             Propiedades
           </NavLink>
         </li>

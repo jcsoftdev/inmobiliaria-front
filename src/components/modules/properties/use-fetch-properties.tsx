@@ -13,7 +13,7 @@ export const useGetProperties = ({
   currentPage,
   enabled = false,
 }: UseGetPropertiesParams) => {
-  const perPage = 2
+  const perPage = 8
 
   const { data, error, isLoading, refetch, isFetching, isRefetching } =
     useQuery<PropertiesResponse>({

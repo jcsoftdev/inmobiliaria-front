@@ -1,11 +1,12 @@
-import { Button } from "@heroui/button";
-import { useLocation, useNavigate } from "react-router";
+import { Button } from '@heroui/button'
+import { routes } from '@router/routes'
+import { useLocation, useNavigate } from 'react-router'
 
-import AgenciesList from "./agencies-list";
+import AgenciesList from './agencies-list'
 
 export const Agencies = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   return (
     <div>
@@ -14,7 +15,7 @@ export const Agencies = () => {
         <Button
           color="primary"
           onPress={() =>
-            navigate("/agencia/register", {
+            navigate(routes.agencies.register, {
               state: { background: location },
             })
           }
@@ -26,7 +27,7 @@ export const Agencies = () => {
 
       <AgenciesList />
     </div>
-  );
-};
+  )
+}
 
-export default Agencies;
+export default Agencies
