@@ -10,13 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { useAppStore } from '@store/index'
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { eventBus } from '@utils/publisher'
+import { useEffect } from 'react'
+import { useSearchParams } from 'react-router'
 
-import { PropertiesResponse } from '@contracts/properties.response'
-
-import { getProperties } from '@services/properties'
+import { PROPERTY_REGISTERED_REFETCH_KEY } from '@components/modules/properties/constants'
+import { useGetProperties } from '@components/modules/properties/use-fetch-properties'
 
 const tableColumns = [
   {
@@ -86,8 +85,6 @@ const SkeletonTable = ({ columns: c }: { columns: number }) => {
           return (
             <TableRow key={index}>
               {(columnKey) => {
-                console.log({ columnKey })
-
                 if (columnKey === 'actions') {
                   return (
                     <TableCell key={columnKey} className="w-0">
@@ -124,33 +121,48 @@ const SkeletonTable = ({ columns: c }: { columns: number }) => {
   )
 }
 
-const PropertiesList = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const perPage = 8
-  const {
-    data: properties,
-    error,
-    isLoading,
-  } = useQuery<PropertiesResponse>({
-    queryKey: ['properties', currentPage],
-    queryFn: async () => await getProperties({ perPage, page: currentPage }),
-  })
+const SkeletonPagination = () => {
+  return (
+    <div className="py-4">
+      <Pagination
+        color="primary"
+        page={6}
+        total={10}
+        onChange={() => {}}
+        renderItem={() => (
+          <Skeleton className="rounded-lg w-9">
+            <div className="h-9 rounded-lg bg-default-300 w-full" />
+          </Skeleton>
+        )}
+      />
+    </div>
+  )
+}
 
-  const { setProperties } = useAppStore()
+const PropertiesList = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const page = searchParams.get('page') ?? '1'
+  const { error, isLoading, properties, refetch, isFetching } =
+    useGetProperties({
+      currentPage: +page,
+      enabled: true,
+    })
+
+  const setCurrentPage = (page: number) => {
+    setSearchParams({ page: page.toString() })
+  }
 
   useEffect(() => {
-    if (properties) {
-      setProperties({
-        data: properties.data,
-        meta: properties.meta,
-        isLoading,
-        isError: !!error,
-      })
+    const handleUpdate = () => {
+      refetch()
     }
-  }, [properties, setProperties, isLoading, error])
+    eventBus.on(PROPERTY_REGISTERED_REFETCH_KEY, handleUpdate)
+
+    return () => eventBus.off(PROPERTY_REGISTERED_REFETCH_KEY, handleUpdate)
+  }, [refetch])
 
   if (isLoading) {
-    return <SkeletonTable columns={perPage} />
+    return <SkeletonTable columns={8} />
   }
 
   if (error) {
@@ -162,7 +174,7 @@ const PropertiesList = () => {
     )
   }
 
-  console.log({ properties, error, isLoading })
+  console.log({ properties, error, isLoading, isFetching })
 
   return (
     <div className="">
@@ -297,14 +309,18 @@ const PropertiesList = () => {
           }}
         </TableBody>
       </Table>
-      <div className="py-4">
-        <Pagination
-          color="primary"
-          page={currentPage}
-          total={properties?.meta.lastPage ?? 0}
-          onChange={setCurrentPage}
-        />
-      </div>
+      {!isLoading && !isFetching ? (
+        <div className="py-4">
+          <Pagination
+            color="primary"
+            page={+page}
+            total={+(properties?.meta?.lastPage ?? 0)}
+            onChange={setCurrentPage}
+          />
+        </div>
+      ) : (
+        <SkeletonPagination />
+      )}
     </div>
   )
 }
