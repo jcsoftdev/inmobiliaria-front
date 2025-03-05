@@ -10,9 +10,12 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import useAppStore from '@store/index'
+import { eventBus } from '@utils/publisher'
 import { useCallback, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useNavigate } from 'react-router'
+
+import { PROPERTY_REGISTERED_REFETCH_KEY } from '@components/modules/properties/constants'
 
 import {
   PROPERTIES_AMENITIES,
@@ -61,8 +64,9 @@ const PropertyForm = () => {
   }
 
   const onClose = () => {
-    navigate('/properties')
+    navigate(-1)
     onCloseModal()
+    eventBus.emit(PROPERTY_REGISTERED_REFETCH_KEY)
   }
 
   const onSubmit = (props: Inputs) => {

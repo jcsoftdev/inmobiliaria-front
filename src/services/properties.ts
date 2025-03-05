@@ -12,8 +12,6 @@ export const getProperties = async ({
   page?: number
   perPage?: number
 }): Promise<PropertiesResponse> => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
   const response = await httpRequest.get<PropertiesResponse>(
     envVariables.API_URL_PROPERTIES + `?page=${page}&perPage=${perPage}`
   )

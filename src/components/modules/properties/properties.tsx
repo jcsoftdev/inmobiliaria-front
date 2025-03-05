@@ -12,6 +12,7 @@ const Properties = () => {
     <div>
       <div className="flex justify-between mt-10">
         <h2 className="text-2xl">Propiedades</h2>
+
         <Button
           color="primary"
           onPress={() =>
