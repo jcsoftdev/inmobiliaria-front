@@ -2,23 +2,29 @@ type EventCallback = <T = unknown>(...args: T[]) => void
 
 type EventType = string | symbol
 
-class EventBus {
-  private events: Record<EventType, EventCallback[]> = {}
+const createEventBus = () => {
+  const events: Record<EventType, EventCallback[]> = {}
 
-  on(event: EventType, callback: EventCallback) {
-    if (!this.events[event]) this.events[event] = []
-    this.events[event].push(callback)
+  const on = (event: EventType, callback: EventCallback) => {
+    if (!events[event]) events[event] = []
+    events[event].push(callback)
   }
 
-  off(event: EventType, callback: EventCallback) {
-    if (!this.events[event]) return
-    this.events[event] = this.events[event].filter((cb) => cb !== callback)
+  const off = (event: EventType, callback: EventCallback) => {
+    if (!events[event]) return
+    events[event] = events[event].filter((cb) => cb !== callback)
   }
 
-  emit<T = unknown>(event: EventType, ...args: T[]) {
-    if (!this.events[event]) return
-    this.events[event].forEach((callback) => callback(...args))
+  const emit = <T = unknown>(event: EventType, ...args: T[]) => {
+    if (!events[event]) return
+    events[event].forEach((callback) => callback(...args))
+  }
+
+  return {
+    on,
+    off,
+    emit,
   }
 }
 
-export const eventBus = new EventBus()
+export const eventBus = createEventBus()
