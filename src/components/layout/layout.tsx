@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react'
+import { Outlet } from 'react-router'
 
 interface LayoutProps {
-  children: React.ReactNode
   header: FunctionComponent<{
     className?: string
     style?: React.CSSProperties
@@ -17,7 +17,6 @@ interface LayoutProps {
 }
 
 const Layout = ({
-  children,
   footer: Footer,
   header: Header,
   sidebar: Sidebar,
@@ -37,7 +36,9 @@ const Layout = ({
         className="bg-gray-100 text-center p-4 md:px-10 overflow-scroll"
         style={{ gridArea: 'main' }}
       >
-        <div className="max-w-[70vw] mx-auto">{children}</div>
+        <div className="max-w-[70vw] mx-auto">
+          <Outlet />
+        </div>
       </div>
       <Footer className="bg-white text-center" style={{ gridArea: 'footer' }} />
     </div>

@@ -58,6 +58,8 @@ const PropertyForm = () => {
     defaultValues: registration,
   })
 
+  console.log('registration', registration)
+
   const handleChange = (key: keyof Inputs, value: string) => {
     setValue(key, value)
     setPropertiesRegistration({ [key]: value })

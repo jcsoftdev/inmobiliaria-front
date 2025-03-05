@@ -1,6 +1,7 @@
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/react'
-import { useId, useState } from 'react'
+import { useLocalStorage } from '@hooks/useLocalStorage'
+import { useEffect, useId, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import {
@@ -27,6 +28,15 @@ const Login = () => {
   const [hasError, setHasError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  const [token] = useLocalStorage(authStorageKeys.accessToken, '')
+
+  useEffect(() => {
+    if (token) {
+      console.log('redirecting to /')
+      navigate('/')
+    }
+  }, [token, navigate])
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
@@ -48,6 +58,10 @@ const Login = () => {
       .finally(() => {
         setIsLoading(false)
       })
+  }
+
+  if (token) {
+    return null
   }
 
   return (
