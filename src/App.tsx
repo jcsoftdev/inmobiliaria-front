@@ -27,9 +27,11 @@ const NotFound = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       navigate('/')
     }, 3000)
+
+    return () => clearTimeout(timeout)
   }, [navigate])
 
   return (
