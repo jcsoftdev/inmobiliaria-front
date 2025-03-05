@@ -1,8 +1,5 @@
-export const isLogedIn = () => {
-    return false
+export const isLoggedIn = () => {
+  return localStorage.getItem('access_token') !== null
 }
 
-
-export const authSlice = () => ({
-    
-})
+export const authSlice = () => ({})

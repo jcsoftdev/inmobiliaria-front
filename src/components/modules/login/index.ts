@@ -1,1 +1,1 @@
-export { default as LoginsModule } from './logins'
+export { default as LoginModule } from './login'

@@ -32,7 +32,8 @@
       "@services/*": ["./src/services/*"],
       "@store/*": ["./src/store/*"],
       "@http/*": ["./src/http/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@hooks/*": ["./src/hooks/*"]
     },
     "outDir": "./dist"
   },

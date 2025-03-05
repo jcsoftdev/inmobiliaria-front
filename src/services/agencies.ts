@@ -23,7 +23,7 @@ export const getAgencies = async ({
 export const saveAgency = async (
     agency : Omit<Agency, 'id' | 'created_at'>
 ) => {
-    const response = await httpRequest.post(envVariables.API_URL_PROPERTIES, {
+    const response = await httpRequest.post(envVariables.API_URL_AGENCIES, {
         ...agency
     })
     return response

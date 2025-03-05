@@ -17,6 +17,7 @@ export default defineConfig({
       '@store': path.resolve(__dirname, 'src/store'),
       '@http': path.resolve(__dirname, 'src/http'),
       '@utils': path.resolve(__dirname, 'src/utils'),
+      '@hooks': path.resolve(__dirname, 'src/hooks'),
     },
   },
   plugins: [

@@ -1,4 +1,13 @@
-import axios from 'axios'
+import axios, { AxiosInstance } from 'axios'
+
+import {
+  authStorageKeys,
+  saveInLocalStorage,
+} from '@components/modules/login/utils'
+
+import { envVariables } from '@constants/variables'
+
+import { SignInResponse } from '@services/auth'
 
 export abstract class AbstractHttpRequest {
   abstract get<T>(url: string): Promise<T>
@@ -64,20 +73,74 @@ export class FetchHttpRequest extends AbstractHttpRequest {
 }
 
 export class AxiosHttpRequest extends AbstractHttpRequest {
+  private readonly axios: AxiosInstance
+
+  constructor() {
+    super()
+    this.axios = axios.create()
+
+    this.axios.interceptors.request.use((config) => {
+      const accessToken = localStorage.getItem(authStorageKeys.accessToken)
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`
+      }
+      return config
+    })
+
+    this.axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response?.status === 401) {
+          const refreshToken = localStorage.getItem(
+            authStorageKeys.refreshToken
+          )
+          if (!refreshToken) {
+            localStorage.removeItem(authStorageKeys.accessToken)
+            localStorage.removeItem(authStorageKeys.refreshToken)
+            throw new Error('Refresh token not found')
+          }
+
+          const response = await this.post<
+            SignInResponse,
+            {
+              token: string
+            }
+          >(`${envVariables.API_URL_AUTH}/refresh`, {
+            token: refreshToken,
+          }).catch((error) => {
+            localStorage.removeItem(authStorageKeys.accessToken)
+            localStorage.removeItem(authStorageKeys.refreshToken)
+            throw error
+          })
+
+          saveInLocalStorage(authStorageKeys.accessToken, response.access_token)
+          saveInLocalStorage(
+            authStorageKeys.refreshToken,
+            response.refresh_token
+          )
+
+          return this.axios.request(error.config)
+        }
+
+        return Promise.reject(new Error(error.response?.data?.message))
+      }
+    )
+  }
+
   async get<T>(url: string): Promise<T> {
-    return (await axios.get<T>(url)).data
+    return (await this.axios.get<T>(url)).data
   }
 
   async post<T, B>(url: string, body: B): Promise<T> {
-    return (await axios.post<T>(url, body)).data
+    return (await this.axios.post<T>(url, body)).data
   }
 
   async put<T, B>(url: string, body: B): Promise<T> {
-    return (await axios.put<T>(url, body)).data
+    return (await this.axios.put<T>(url, body)).data
   }
 
   async delete<T>(url: string): Promise<T> {
-    return (await axios.delete<T>(url)).data
+    return (await this.axios.delete<T>(url)).data
   }
 }
 
