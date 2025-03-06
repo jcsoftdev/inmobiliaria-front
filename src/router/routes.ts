@@ -8,5 +8,9 @@ export const routes = {
     home: '/agencies',
     register: '/agencies/register',
   },
+  users: {
+    home: '/users',
+    register: '/users/register',
+  },
   login: '/login',
 } as const

@@ -12,6 +12,8 @@ import { LoginModule } from '@components/modules/login'
 import { authStorageKeys } from '@components/modules/login/utils'
 import { PropertiesModule } from '@components/modules/properties'
 import PropertyForm from '@components/modules/properties/property-form'
+import { UserModule } from '@components/modules/users'
+import UserForm from '@components/modules/users/users-form'
 
 export const Router = () => {
   const location = useLocation()
@@ -44,6 +46,7 @@ export const Router = () => {
               element={<PropertiesModule />}
             />
             <Route path={routes.agencies.home} element={<AgenciesModule />} />
+            <Route path={routes.users.home} element={<UserModule />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         )}
@@ -55,6 +58,7 @@ export const Router = () => {
         <Routes>
           <Route path={routes.properties.register} element={<PropertyForm />} />
           <Route path={routes.agencies.register} element={<AgencyForm />} />
+          <Route path={routes.users.register} element={<UserForm/>} />
         </Routes>
       )}
     </>

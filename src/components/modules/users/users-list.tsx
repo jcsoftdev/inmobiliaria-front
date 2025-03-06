@@ -16,37 +16,37 @@ import { useEffect, useState } from "react";
 import Edit from "@components/icons/edit";
 import Eye from "@components/icons/eye";
 import Trash from "@components/icons/trash";
-import { tableColumns } from "@components/modules/agencies/constants";
+import { tableColumns } from "@components/modules/users/constants";
 import { SkeletonTable } from "@components/skeletons/skeleton-table";
 
-import { AgenciesResponse } from "@contracts/agencies.response";
+import { UsersResponse } from "@contracts/users.response";
 
-import { getAgencies } from "@services/agencies";
+import { getUsers } from "@services/users";
 
-const AgenciesList = () => {
+const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 8;
   const {
-    data: agencies,
+    data: users,
     error,
     isLoading,
-  } = useQuery<AgenciesResponse>({
-    queryKey: ["agencies", currentPage],
-    queryFn: async () => await getAgencies({ perPage, page: currentPage }),
+  } = useQuery<UsersResponse>({
+    queryKey: ["users", currentPage],
+    queryFn: async () => await getUsers({ perPage, page: currentPage }),
   });
 
-  const { setAgencies } = useAppStore();
+  const { setUsers } = useAppStore();
 
   useEffect(() => {
-    if (agencies) {
-      setAgencies({
-        data: agencies.data,
-        meta: agencies.meta,
+    if (users) {
+      setUsers({
+        data: users.data,
+        meta: users.meta,
         isLoading,
         isError: !!error,
       });
     }
-  }, [agencies, setAgencies, isLoading, error]);
+  }, [users, setUsers, isLoading, error]);
 
   if (isLoading) {
     return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />;
@@ -61,20 +61,20 @@ const AgenciesList = () => {
     );
   }
 
-  console.log({ agencies, error, isLoading });
+  console.log({ users, error, isLoading });
 
   return (
     <div className="">
-      <Table aria-label="Agencias" className="pt-4">
+      <Table aria-label="Usuarios" className="pt-4">
         <TableHeader columns={tableColumns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>;
           }}
         </TableHeader>
-        <TableBody items={agencies?.data}>
-          {(agency) => {
+        <TableBody items={users?.data}>
+          {(user) => {
             return (
-              <TableRow key={agency.id}>
+              <TableRow key={user.id}>
                 {(columnKey) => {
                   if (columnKey === "actions") {
                     return (
@@ -84,6 +84,7 @@ const AgenciesList = () => {
                             color="primary"
                             className="text-white"
                             isIconOnly
+                            onPress={() => {}}
                           >
                             <Eye />
                           </Button>
@@ -108,7 +109,7 @@ const AgenciesList = () => {
 
                   return (
                     <TableCell key={columnKey}>
-                      <span>{getKeyValue(agency, columnKey)}</span>
+                      <span>{getKeyValue(user, columnKey)}</span>
                     </TableCell>
                   );
                 }}
@@ -121,7 +122,7 @@ const AgenciesList = () => {
         <Pagination
           color="primary"
           page={currentPage}
-          total={agencies?.meta.lastPage ?? 0}
+          total={users?.meta.lastPage ?? 0}
           onChange={setCurrentPage}
         />
       </div>
@@ -129,4 +130,4 @@ const AgenciesList = () => {
   );
 };
 
-export default AgenciesList;
+export default UsersList;
