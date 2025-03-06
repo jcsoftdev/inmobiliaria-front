@@ -14,6 +14,10 @@ export const routes = {
     register: '/clients/register',
     edit: '/clients/edit/:id',
   },
+  users: {
+    home: '/users',
+    register: '/users/register',
+  },
 } as const
 
 export const getDynamicRoute = (

@@ -1,6 +1,7 @@
 import { AgenciesResponse } from '@contracts/agencies.response'
 import { ClientsResponse } from '@contracts/clients.response'
 import { PropertiesResponse } from '@contracts/properties.response'
+import { UsersResponse } from '@contracts/users.response'
 
 export type PropertiesState = {
   data?: PropertiesResponse['data']
@@ -44,3 +45,27 @@ export type ClientsState = {
     phone?: string
   }
 }
+export type UsersState = {
+  data?: UsersResponse['data']
+  meta?: UsersResponse['meta']
+  isLoading?: boolean
+  isError?: boolean
+  registration: {
+    name?: string
+    lastName?: string
+    email?: string
+    agencyId?: string
+    password?: string
+    phone?: string
+    role?: string
+    username?: string
+    status?: string
+    dni?: string
+    experiesAt?: string
+  }
+}
+
+
+export type SetProperties = (properties: PropertiesState) => void
+export type SetAgencies = (agencies: AgenciesState) => void
+export type SetUsers = (users: UsersState) => void
