@@ -1,7 +1,7 @@
-import { useAppStore } from '@store/index'
+import { usePropertiesStore } from '@store/properties.store'
 
 const Dashboard = () => {
-  const { properties } = useAppStore()
+  const properties = usePropertiesStore()
   return (
     <div>
       <h1>Dashboard</h1>

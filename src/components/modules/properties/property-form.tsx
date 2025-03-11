@@ -9,7 +9,7 @@ import {
   SelectItem,
   useDisclosure,
 } from '@heroui/react'
-import useAppStore from '@store/index'
+import { usePropertiesStore } from '@store/properties.store'
 import { eventBus } from '@utils/publisher'
 import { useCallback, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -35,10 +35,8 @@ type Inputs = {
 }
 
 const PropertyForm = () => {
-  const {
-    setPropertiesRegistration,
-    properties: { registration },
-  } = useAppStore()
+  const registration = usePropertiesStore().registration
+  const { updateRegistration } = usePropertiesStore()
   const {
     isOpen,
     onOpen,
@@ -52,7 +50,6 @@ const PropertyForm = () => {
     handleSubmit,
     control,
     setValue,
-
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: registration,
@@ -60,7 +57,7 @@ const PropertyForm = () => {
 
   const handleChange = (key: keyof Inputs, value: string) => {
     setValue(key, value)
-    setPropertiesRegistration({ [key]: value })
+    updateRegistration({ [key]: value })
   }
 
   const onClose = () => {
@@ -70,7 +67,6 @@ const PropertyForm = () => {
   }
 
   const onSubmit = (props: Inputs) => {
-    setPropertiesRegistration(props)
     saveProperty({
       description: props.description,
       features: props.amenities.split(',').map((amenity) => ({
@@ -109,7 +105,7 @@ const PropertyForm = () => {
   }
 
   const onCancel = useCallback(() => {
-    setPropertiesRegistration({
+    updateRegistration({
       name: '',
       description: '',
       price: '',
@@ -117,7 +113,7 @@ const PropertyForm = () => {
       location: '',
       type: '',
     })
-  }, [setPropertiesRegistration])
+  }, [updateRegistration])
 
   useEffect(() => {
     onOpen()
