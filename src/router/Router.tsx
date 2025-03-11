@@ -1,4 +1,4 @@
-import { useLocalStorage } from '@hooks/useLocalStorage'
+import { useLocalStorage } from '@hooks/use-localStorage'
 import { NotFound } from '@router/NotFound'
 import { routes } from '@router/routes'
 import { useEffect } from 'react'
@@ -7,6 +7,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router'
 import { Footer, Header, Layout, Sidebar } from '@components/layout'
 import { AgenciesModule } from '@components/modules/agencies'
 import AgencyForm from '@components/modules/agencies/agencies-form'
+import { ClientsModule } from '@components/modules/clients'
+import ClientsEdit from '@components/modules/clients/clients-edit'
 import { Dashboard } from '@components/modules/dashboard'
 import { LoginModule } from '@components/modules/login'
 import { authStorageKeys } from '@components/modules/login/utils'
@@ -44,6 +46,7 @@ export const Router = () => {
               element={<PropertiesModule />}
             />
             <Route path={routes.agencies.home} element={<AgenciesModule />} />
+            <Route path={routes.clients.home} element={<ClientsModule />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         )}
@@ -54,6 +57,8 @@ export const Router = () => {
       {hasAuth && background && (
         <Routes>
           <Route path={routes.properties.register} element={<PropertyForm />} />
+          <Route path={routes.clients.edit} element={<ClientsEdit />} />
+          <Route path={routes.clients.register} element={<PropertyForm />} />
           <Route path={routes.agencies.register} element={<AgencyForm />} />
         </Routes>
       )}

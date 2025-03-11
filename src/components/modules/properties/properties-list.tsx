@@ -22,8 +22,8 @@ import {
   tableColumns,
 } from '@components/modules/properties/constants'
 import { useGetProperties } from '@components/modules/properties/use-fetch-properties'
-import { SkeletonPagination } from '@components/skeletons/skeleton-pagination'
-import { SkeletonTable } from '@components/skeletons/skeleton-table'
+import { SkeletonPagination } from '@components/ui/alert/skeletons/skeleton-pagination'
+import { SkeletonTable } from '@components/ui/alert/skeletons/skeleton-table'
 
 const statusMap = {
   active: <Chip color="success">Activo</Chip>,

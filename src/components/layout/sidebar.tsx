@@ -42,6 +42,11 @@ const Sidebar = ({ className, ...props }: SidebarProps) => {
             Propiedades
           </NavLink>
         </li>
+        <li>
+          <NavLink className={'p-4'} to={routes.clients.home}>
+            Clientes
+          </NavLink>
+        </li>
       </ul>
     </nav>
   )

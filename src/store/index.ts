@@ -7,11 +7,6 @@ type AppState = {
   agencies: AgenciesState
 }
 
-// type AppSetters = {
-//   setProperties: SetProperties
-//   setPropertiesRegistration: SetPropertiesRegistration
-// }
-
 const initialState: AppState = {
   properties: {
     isLoading: false,
@@ -19,12 +14,12 @@ const initialState: AppState = {
     meta: undefined,
     data: undefined,
     registration: {
-      // name: '',
-      // description: '',
-      // price: '',
-      // type: '',
-      // location: '',
-      // amenities: '',
+      amenities: '',
+      description: '',
+      location: '',
+      name: '',
+      price: '',
+      type: '',
     },
   },
   agencies: {
@@ -32,9 +27,8 @@ const initialState: AppState = {
     isError: false,
     meta: undefined,
     data: undefined,
-    registration: {
-    }
-  }
+    registration: {},
+  },
 }
 
 const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
@@ -45,9 +39,9 @@ const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
       }
     }),
   setAgencies: (agencies: Partial<AgenciesState>) =>
-    set((prev) =>{
+    set((prev) => {
       return {
-        agencies: { ...prev.agencies, ...agencies},
+        agencies: { ...prev.agencies, ...agencies },
       }
     }),
   setPropertiesRegistration: (
@@ -65,8 +59,8 @@ const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
       }
     }),
   setAgenciesRegistration: (
-    registration: Partial<AgenciesState['registration']>  
-  ) => 
+    registration: Partial<AgenciesState['registration']>
+  ) =>
     set((state) => {
       return {
         agencies: {
@@ -74,10 +68,10 @@ const createSetters = (set: Parameters<StateCreator<AppState>>[0]) => ({
           registration: {
             ...state?.agencies?.registration,
             ...registration,
-          }
-        }
+          },
+        },
       }
-    })
+    }),
 })
 
 export const useAppStore = create<
