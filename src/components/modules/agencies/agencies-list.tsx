@@ -1,4 +1,4 @@
-import { Pagination, Skeleton } from "@heroui/react";
+import { Pagination, Skeleton } from '@heroui/react'
 import {
   getKeyValue,
   Table,
@@ -7,43 +7,43 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@heroui/table";
-import { useAppStore } from "@store/index";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+} from '@heroui/table'
+import { useAgenciesStore } from '@store/agencies.store'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 
-import { AgenciesResponse } from "@contracts/agencies.response";
+import { AgenciesResponse } from '@contracts/agencies.response'
 
-import { getAgencies } from "@services/agencies";
+import { getAgencies } from '@services/agencies'
 
 const tableColumns = [
   {
-    key: "name",
-    title: "Nombre",
+    key: 'name',
+    title: 'Nombre',
   },
   {
-    key: "address",
-    title: "Dirección",
+    key: 'address',
+    title: 'Dirección',
   },
   {
-    key: "phone",
-    title: "Teléfono",
+    key: 'phone',
+    title: 'Teléfono',
   },
   {
-    key: "email",
-    title: "Email",
+    key: 'email',
+    title: 'Email',
   },
-];
+]
 
 const SkeletonTable = ({ columns: c }: { columns: number }) => {
   const columns = Array.from({ length: c }).map((_, index) => ({
     index: `${index}`,
-  }));
+  }))
   return (
     <Table aria-label="Agencias" className="pt-4">
       <TableHeader columns={tableColumns}>
         {(column) => {
-          return <TableColumn key={column.key}>{column.title}</TableColumn>;
+          return <TableColumn key={column.key}>{column.title}</TableColumn>
         }}
       </TableHeader>
       <TableBody items={columns}>
@@ -51,7 +51,7 @@ const SkeletonTable = ({ columns: c }: { columns: number }) => {
           return (
             <TableRow key={index}>
               {(columnKey) => {
-                console.log({ columnKey });
+                console.log({ columnKey })
 
                 return (
                   <TableCell key={columnKey}>
@@ -61,29 +61,29 @@ const SkeletonTable = ({ columns: c }: { columns: number }) => {
                       </Skeleton>
                     </div>
                   </TableCell>
-                );
+                )
               }}
             </TableRow>
-          );
+          )
         }}
       </TableBody>
     </Table>
-  );
-};
+  )
+}
 
 const AgenciesList = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 8;
+  const [currentPage, setCurrentPage] = useState(1)
+  const perPage = 8
   const {
     data: agencies,
     error,
     isLoading,
   } = useQuery<AgenciesResponse>({
-    queryKey: ["agencies", currentPage],
+    queryKey: ['agencies', currentPage],
     queryFn: async () => await getAgencies({ perPage, page: currentPage }),
-  });
+  })
 
-  const { setAgencies } = useAppStore();
+  const { setAgencies } = useAgenciesStore()
 
   useEffect(() => {
     if (agencies) {
@@ -92,12 +92,12 @@ const AgenciesList = () => {
         meta: agencies.meta,
         isLoading,
         isError: !!error,
-      });
+      })
     }
-  }, [agencies, setAgencies, isLoading, error]);
+  }, [agencies, setAgencies, isLoading, error])
 
   if (isLoading) {
-    return <SkeletonTable columns={perPage} />;
+    return <SkeletonTable columns={perPage} />
   }
 
   if (error) {
@@ -106,17 +106,17 @@ const AgenciesList = () => {
         Error:
         {error.message}
       </p>
-    );
+    )
   }
 
-  console.log({ agencies, error, isLoading });
+  console.log({ agencies, error, isLoading })
 
   return (
     <div className="">
       <Table aria-label="Agencias" className="pt-4">
         <TableHeader columns={tableColumns}>
           {(column) => {
-            return <TableColumn key={column.key}>{column.title}</TableColumn>;
+            return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
         <TableBody items={agencies?.data}>
@@ -128,10 +128,10 @@ const AgenciesList = () => {
                     <TableCell key={columnKey}>
                       <span>{getKeyValue(agency, columnKey)}</span>
                     </TableCell>
-                  );
+                  )
                 }}
               </TableRow>
-            );
+            )
           }}
         </TableBody>
       </Table>
@@ -144,7 +144,7 @@ const AgenciesList = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AgenciesList;
+export default AgenciesList

@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createPortal } from 'react-dom'
 import { BrowserRouter } from 'react-router'
 
+import AlertContainer from '@components/ui/alert/alert-container'
+
 const client = new QueryClient()
 
 function App() {
@@ -14,6 +16,7 @@ function App() {
     <QueryClientProvider client={client}>
       <BrowserRouter>
         <HeroUIProvider>
+          <AlertContainer />
           {createPortal(<ToastProvider placement="top-right" />, document.body)}
           <Router />
         </HeroUIProvider>

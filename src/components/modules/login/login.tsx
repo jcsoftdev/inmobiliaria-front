@@ -1,6 +1,6 @@
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/react'
-import { useLocalStorage } from '@hooks/useLocalStorage'
+import { useLocalStorage } from '@hooks/use-localStorage'
 import { useEffect, useId, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 

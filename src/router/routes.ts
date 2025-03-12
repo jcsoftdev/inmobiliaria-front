@@ -9,4 +9,20 @@ export const routes = {
     register: '/agencies/register',
   },
   login: '/login',
+  clients: {
+    home: '/clients',
+    register: '/clients/register',
+    edit: '/clients/edit/:id',
+  },
 } as const
+
+export const getDynamicRoute = (
+  route: string,
+  params: Record<string, string | number>
+) => {
+  let newRoute = route
+  Object.entries(params).forEach(([key, value]) => {
+    newRoute = newRoute.replace(`:${key}`, value.toString())
+  })
+  return newRoute
+}

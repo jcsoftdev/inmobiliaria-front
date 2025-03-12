@@ -8,7 +8,7 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { routes } from '@router/routes'
-import useAppStore from '@store/index'
+import { useAgenciesStore } from '@store/agencies.store'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -23,10 +23,12 @@ type Inputs = {
 }
 
 const AgencyForm = () => {
-  const {
-    setAgenciesRegistration,
-    agencies: { registration },
-  } = useAppStore()
+  // const {
+  //   setAgenciesRegistration,
+  //   agencies: { registration },
+  // } = useAppStore()
+  const registration = useAgenciesStore().registration
+  const { setAgenciesRegistration } = useAgenciesStore()
   const {
     isOpen,
     onOpen,
