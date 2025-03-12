@@ -9,6 +9,7 @@ import { AgenciesModule } from '@components/modules/agencies'
 import AgencyForm from '@components/modules/agencies/agencies-form'
 import { ClientsModule } from '@components/modules/clients'
 import ClientsEdit from '@components/modules/clients/clients-edit'
+import ClientsRegister from '@components/modules/clients/clients-register'
 import { Dashboard } from '@components/modules/dashboard'
 import { LoginModule } from '@components/modules/login'
 import { authStorageKeys } from '@components/modules/login/utils'
@@ -58,7 +59,7 @@ export const Router = () => {
         <Routes>
           <Route path={routes.properties.register} element={<PropertyForm />} />
           <Route path={routes.clients.edit} element={<ClientsEdit />} />
-          <Route path={routes.clients.register} element={<PropertyForm />} />
+          <Route path={routes.clients.register} element={<ClientsRegister />} />
           <Route path={routes.agencies.register} element={<AgencyForm />} />
         </Routes>
       )}

@@ -33,7 +33,7 @@ const ClientsList = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { error, isLoading, properties, refetch, isFetching } = useGetClients({
+  const { error, isLoading, clients, refetch, isFetching } = useGetClients({
     currentPage: +page,
     enabled: true,
   })
@@ -68,7 +68,7 @@ const ClientsList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={properties?.data}>
+        <TableBody items={clients?.data}>
           {(client) => {
             console.log({ client })
             return (
@@ -142,12 +142,12 @@ const ClientsList = () => {
           <Pagination
             color="primary"
             page={+page}
-            total={+(properties?.meta?.lastPage ?? 0)}
+            total={+(clients?.meta?.lastPage ?? 0)}
             onChange={setCurrentPage}
           />
         </div>
       ) : (
-        <SkeletonPagination total={+(properties?.meta?.lastPage ?? 0)} />
+        <SkeletonPagination total={+(clients?.meta?.lastPage ?? 0)} />
       )}
     </div>
   )

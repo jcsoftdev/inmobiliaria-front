@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
+import { usePaginator } from '@hooks/use-paginator'
 import { eventBus } from '@utils/publisher'
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router'
 
 import Edit from '@components/icons/edit'
 import Eye from '@components/icons/eye'
@@ -43,17 +43,13 @@ const typeMap = {
 }
 
 const PropertiesList = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const page = searchParams.get('page') ?? '1'
+  const { page, setCurrentPage } = usePaginator()
+
   const { error, isLoading, properties, refetch, isFetching } =
     useGetProperties({
       currentPage: +page,
       enabled: true,
     })
-
-  const setCurrentPage = (page: number) => {
-    setSearchParams({ page: page.toString() })
-  }
 
   useEffect(() => {
     const handleUpdate = () => {

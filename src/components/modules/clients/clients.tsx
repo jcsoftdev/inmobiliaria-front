@@ -17,7 +17,7 @@ const Clients = () => {
         <Button
           color="default"
           onPress={() =>
-            navigate(routes.properties.register, {
+            navigate(routes.clients.register, {
               state: { background: location },
             })
           }
