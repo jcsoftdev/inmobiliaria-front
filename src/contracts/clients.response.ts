@@ -8,7 +8,10 @@ export interface Data {
   name: string
   email: string
   phone: string
-  created_at: string
+  createdAt: string
+  dni: string
+  address: string
+  lastName: string
 }
 
 export interface Meta {

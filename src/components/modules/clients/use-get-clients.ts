@@ -1,10 +1,11 @@
-import { useClientsStore } from '@store/clients.store'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import { ClientsResponse } from '@contracts/clients.response'
 
 import { getClients } from '@services/clients'
+
+import { useClientsStore } from '@store/clients.store'
 
 interface UseGetPropertiesParams {
   currentPage: number

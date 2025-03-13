@@ -9,8 +9,6 @@ import {
   SelectItem,
   useDisclosure,
 } from '@heroui/react'
-import { usePropertiesStore } from '@store/properties.store'
-import { eventBus } from '@utils/publisher'
 import { useCallback, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -24,6 +22,10 @@ import {
 } from '@constants/property'
 
 import { saveProperty } from '@services/properties'
+
+import { eventBus } from '@utils/publisher'
+
+import { usePropertiesStore } from '@store/properties.store'
 
 type Inputs = {
   title: string

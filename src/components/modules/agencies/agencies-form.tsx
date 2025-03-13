@@ -7,13 +7,15 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react'
-import { routes } from '@router/routes'
-import { useAgenciesStore } from '@store/agencies.store'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { saveAgency } from '@services/agencies'
+
+import { useAgenciesStore } from '@store/agencies.store'
+
+import { routes } from '@router/routes'
 
 type Inputs = {
   name: string

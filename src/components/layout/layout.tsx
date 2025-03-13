@@ -14,12 +14,14 @@ interface LayoutProps {
     className?: string
     style?: React.CSSProperties
   }>
+  children?: React.ReactNode
 }
 
 const Layout = ({
   footer: Footer,
   header: Header,
   sidebar: Sidebar,
+  children,
 }: LayoutProps) => {
   const gridAreas = `'sidebar header''sidebar main''sidebar footer'`
   return (
@@ -37,6 +39,7 @@ const Layout = ({
         style={{ gridArea: 'main' }}
       >
         <div className="max-w-[70vw] mx-auto">
+          {children}
           <Outlet />
         </div>
       </div>

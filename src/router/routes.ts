@@ -8,7 +8,7 @@ export const routes = {
     home: '/agencies',
     register: '/agencies/register',
   },
-  login: '/login',
+  login: 'login',
   clients: {
     home: '/clients',
     register: '/clients/register',
@@ -18,7 +18,7 @@ export const routes = {
 
 export const getDynamicRoute = (
   route: string,
-  params: Record<string, string | number>
+  params: Record<string, string | number>,
 ) => {
   let newRoute = route
   Object.entries(params).forEach(([key, value]) => {

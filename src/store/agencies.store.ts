@@ -1,13 +1,14 @@
-import { AgenciesState } from '@store/types'
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
+import { AgenciesState } from '@store/types'
+
 type AgencyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 export const createSetters = (
-  set: Parameters<AgencyStateCreator<AgenciesState>>[0]
+  set: Parameters<AgencyStateCreator<AgenciesState>>[0],
 ) => ({
   setAgenciesRegistration: (
-    registration: Partial<AgenciesState['registration']>
+    registration: Partial<AgenciesState['registration']>,
   ) =>
     set(
       (state) => {
@@ -20,7 +21,7 @@ export const createSetters = (
         }
       },
       false,
-      `agencies/setAgenciesRegistration=>${Object.keys(registration).join(',')}`
+      `agencies/setAgenciesRegistration=>${Object.keys(registration).join(',')}`,
     ),
   setAgencies: (agencies: Partial<AgenciesState>) =>
     set(
@@ -31,7 +32,7 @@ export const createSetters = (
         }
       },
       false,
-      `agencies/setAgencies`
+      `agencies/setAgencies`,
     ),
 })
 
@@ -57,5 +58,5 @@ export const useAgenciesStore = create<AgenciesStore>()(
     ? devtools((set) => ({ ...initialAgenciesState, ...createSetters(set) }), {
         name: 'agencies',
       })
-    : (set) => ({ ...initialAgenciesState, ...createSetters(set) })
+    : (set) => ({ ...initialAgenciesState, ...createSetters(set) }),
 )

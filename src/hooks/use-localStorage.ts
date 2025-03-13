@@ -4,7 +4,7 @@ export type SetValue<T> = (newValue: T) => void
 
 export const useLocalStorage = <T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, SetValue<T>] => {
   const getJsonOrString = useCallback((value: T | null) => {
     try {

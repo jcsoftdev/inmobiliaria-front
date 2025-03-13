@@ -1,68 +1,125 @@
-import { useLocalStorage } from '@hooks/use-localStorage'
-import { NotFound } from '@router/NotFound'
-import { routes } from '@router/routes'
-import { useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router'
+import { Suspense, lazy } from 'react'
+import { Route, Routes, Navigate, Outlet } from 'react-router'
 
 import { Footer, Header, Layout, Sidebar } from '@components/layout'
-import { AgenciesModule } from '@components/modules/agencies'
-import AgencyForm from '@components/modules/agencies/agencies-form'
-import { ClientsModule } from '@components/modules/clients'
-import ClientsEdit from '@components/modules/clients/clients-edit'
-import ClientsRegister from '@components/modules/clients/clients-register'
-import { Dashboard } from '@components/modules/dashboard'
-import { LoginModule } from '@components/modules/login'
 import { authStorageKeys } from '@components/modules/login/utils'
-import { PropertiesModule } from '@components/modules/properties'
-import PropertyForm from '@components/modules/properties/property-form'
+
+import { routes } from '@router/routes'
+
+import { useLocalStorage } from '@hooks/use-localStorage'
+
+const AgenciesModule = lazy(() =>
+  import('@components/modules/agencies').then((m) => ({
+    default: m.AgenciesModule,
+  })),
+)
+
+const AgencyForm = lazy(() =>
+  import('@components/modules/agencies').then((m) => ({
+    default: m.AgencyForm,
+  })),
+)
+
+const ClientsModule = lazy(() =>
+  import('@components/modules/clients').then((m) => ({
+    default: m.ClientsModule,
+  })),
+)
+
+const ClientsForm = lazy(() =>
+  import('@components/modules/clients').then((m) => ({
+    default: m.ClientsForm,
+  })),
+)
+
+const Dashboard = lazy(() =>
+  import('@components/modules/dashboard').then((m) => ({
+    default: m.Dashboard,
+  })),
+)
+
+const PropertiesModule = lazy(() =>
+  import('@components/modules/properties').then((m) => ({
+    default: m.PropertiesModule,
+  })),
+)
+
+const PropertyForm = lazy(() =>
+  import('@components/modules/properties').then((m) => ({
+    default: m.PropertyForm,
+  })),
+)
+const LoginModule = lazy(() =>
+  import('@components/modules/login').then((m) => ({ default: m.LoginModule })),
+)
+
+const NotFound = lazy(() =>
+  import('@router/NotFound').then((m) => ({ default: m.NotFound })),
+)
+
+const AuthWrapper = () => {
+  const [token] = useLocalStorage(authStorageKeys.accessToken, '')
+  const currentPath = window.location.pathname
+
+  if (!token && !currentPath.includes(routes.login)) {
+    console.log('redirecting to login')
+    return <Navigate to={routes.login} relative="path" />
+  }
+
+  return <Outlet />
+}
 
 export const Router = () => {
-  const location = useLocation()
-  const background = location.state?.background
-  const [token] = useLocalStorage(authStorageKeys.accessToken, '')
-
-  const hasAuth = !!token
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!hasAuth && location.pathname !== routes.login) {
-      navigate(routes.login, { replace: true })
-    }
-  }, [hasAuth, location.pathname, navigate])
-
   return (
-    <>
-      <Routes location={background || location}>
-        <Route path={routes.login} element={<LoginModule />} />
+    <Suspense
+      fallback={
+        <Layout footer={Footer} header={Header} sidebar={Sidebar}>
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-sky-700"></div>
+          </div>
+        </Layout>
+      }
+    >
+      <Routes>
+        <Route
+          path={routes.login}
+          element={
+            <Suspense
+              fallback={
+                <div className="w-full h-screen grid place-content-center">
+                  Cargando login...
+                </div>
+              }
+            >
+              <LoginModule />
+            </Suspense>
+          }
+        />
 
-        {hasAuth && (
-          <Route
-            element={
-              <Layout footer={Footer} header={Header} sidebar={Sidebar} />
-            }
-          >
+        <Route
+          element={<Layout footer={Footer} header={Header} sidebar={Sidebar} />}
+        >
+          <Route element={<AuthWrapper />}>
             <Route index element={<Dashboard />} />
-            <Route
-              path={routes.properties.home}
-              element={<PropertiesModule />}
-            />
-            <Route path={routes.agencies.home} element={<AgenciesModule />} />
-            <Route path={routes.clients.home} element={<ClientsModule />} />
+
+            <Route path={routes.properties.home} element={<PropertiesModule />}>
+              <Route path="register" element={<PropertyForm />} />
+            </Route>
+
+            <Route path={routes.agencies.home} element={<AgenciesModule />}>
+              <Route path="register" element={<AgencyForm />} />
+            </Route>
+
+            <Route path={routes.clients.home} element={<ClientsModule />}>
+              <Route path="register" element={<ClientsForm />} />
+              <Route path="edit/:id" element={<ClientsForm />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Route>
-        )}
-
-        {!hasAuth && <Route path="*" element={<></>} />}
+        </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
-
-      {hasAuth && background && (
-        <Routes>
-          <Route path={routes.properties.register} element={<PropertyForm />} />
-          <Route path={routes.clients.edit} element={<ClientsEdit />} />
-          <Route path={routes.clients.register} element={<ClientsRegister />} />
-          <Route path={routes.agencies.register} element={<AgencyForm />} />
-        </Routes>
-      )}
-    </>
+    </Suspense>
   )
 }

@@ -1,23 +1,21 @@
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from '@heroui/react'
-import {
-  cloneElement,
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-} from 'react'
-import { useNavigate } from 'react-router'
+import { Modal, ModalContent, useDisclosure } from '@heroui/react'
+import { createContext, useCallback, useMemo } from 'react'
+import { FieldValues, UseFormReturn } from 'react-hook-form'
 
-interface FormModalProps {
+import { Body } from '@components/ui/form-modal/form-modal-body'
+import { Footer } from '@components/ui/form-modal/form-modal-footer'
+import { Header } from '@components/ui/form-modal/form-modal-header'
+
+import { routes } from '@router/routes'
+
+import { useBackNavigate } from '@hooks/use-navigate'
+
+interface FormModalProps<T extends FieldValues> {
   children: React.ReactNode
-  handleSubmit: React.FormEventHandler<HTMLDivElement>
+  form: UseFormReturn<T>
+  onSubmit: (event: T) => void
+  redirectTo?: string
+  onClose?: () => void
 }
 
 const FormModalContext = createContext<{
@@ -30,52 +28,25 @@ const FormModalContext = createContext<{
   handleClose: () => {},
 })
 
-const useFormModalContext = () => {
-  const context = useContext(FormModalContext)
-
-  return context
-}
-
-const Header = ({ children }: { children: React.ReactNode }) => (
-  <ModalHeader>{children}</ModalHeader>
-)
-
-const Body = ({ children }: { children: React.ReactNode }) => (
-  <ModalBody>{children}</ModalBody>
-)
-
-const Footer = ({
+const FormModal = <T extends FieldValues>({
   children,
-}: {
-  children: (props: { onClose: () => void }) => React.ReactElement
-}) => {
-  const { handleClose } = useFormModalContext()
-
-  return (
-    <ModalFooter>
-      {cloneElement(children({ onClose: handleClose }))}
-    </ModalFooter>
-  )
-}
-
-const FormModal = ({ children, handleSubmit }: FormModalProps) => {
-  const { isOpen, onOpenChange, onClose } = useDisclosure({ defaultOpen: true })
-  const navigate = useNavigate()
+  onSubmit,
+  redirectTo,
+  onClose: onCloseProp,
+  form,
+}: FormModalProps<T>) => {
+  const { isOpen, onOpenChange } = useDisclosure({ defaultOpen: true })
+  const navigate = useBackNavigate()
 
   const handleClose = useCallback(() => {
-    onClose()
-    navigate(-1)
-  }, [navigate, onClose])
-
-  const onSubmit = (e: React.FormEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    handleClose()
-    handleSubmit(e)
-  }
+    onOpenChange()
+    onCloseProp?.()
+    navigate(redirectTo ?? routes.dashboard)
+  }, [navigate, onCloseProp, onOpenChange, redirectTo])
 
   const memoizedProps = useMemo(
     () => ({ isOpen, onOpenChange, handleClose }),
-    [handleClose, isOpen, onOpenChange]
+    [handleClose, isOpen, onOpenChange],
   )
 
   return (
@@ -84,12 +55,36 @@ const FormModal = ({ children, handleSubmit }: FormModalProps) => {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        onClose={handleClose}
+        onOpenChange={handleClose}
         className="p-2"
         size="3xl"
+        motionProps={{
+          initial: { opacity: 0, y: 50 },
+          animate: { opacity: 1, y: 0 },
+          exit: { opacity: 0, y: 50 },
+        }}
       >
-        <ModalContent as={'form'} onSubmit={onSubmit}>
+        <ModalContent
+          as="form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit((data) => {
+              onSubmit(data)
+              handleClose()
+            })(e)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              e.stopPropagation()
+              form.handleSubmit((data) => {
+                onSubmit(data)
+                handleClose()
+              })(e)
+            }
+          }}
+        >
           {children}
         </ModalContent>
       </Modal>

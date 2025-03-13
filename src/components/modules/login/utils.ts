@@ -8,7 +8,7 @@ export const saveInLocalStorage = (key: string, value: string) => {
     new StorageEvent('storage', {
       key,
       newValue: value,
-    })
+    }),
   )
 
   localStorage.setItem(key, value)

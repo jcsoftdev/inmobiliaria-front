@@ -1,8 +1,9 @@
 import { Button } from '@heroui/button'
-import { routes } from '@router/routes'
-import { useLocation, useNavigate } from 'react-router'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 
 import PropertiesList from '@components/modules/properties/properties-list'
+
+import { routes } from '@router/routes'
 
 const Properties = () => {
   const navigate = useNavigate()
@@ -26,6 +27,7 @@ const Properties = () => {
         </Button>
       </div>
       <PropertiesList />
+      <Outlet />
     </div>
   )
 }

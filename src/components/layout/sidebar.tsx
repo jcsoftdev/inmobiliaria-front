@@ -1,6 +1,7 @@
-import { routes } from '@router/routes'
 import { NavLink } from 'react-router'
 import { twMerge } from 'tailwind-merge'
+
+import { routes } from '@router/routes'
 
 import img from '../../assets/logo.png'
 

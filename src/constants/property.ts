@@ -19,12 +19,12 @@ export const PROPERTIES_TYPES = Object.entries(PropertyTypesEnum).map(
   ([key, value]) => ({
     key,
     value,
-  })
+  }),
 )
 
 export const PROPERTIES_AMENITIES = Object.entries(PropertyAmenitiesEnum).map(
   ([key, value]) => ({
     key,
     value,
-  })
+  }),
 )

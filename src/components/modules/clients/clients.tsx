@@ -1,33 +1,29 @@
 import { Button } from '@heroui/button'
-import { routes } from '@router/routes'
-import { useLocation, useNavigate } from 'react-router'
+import { Outlet, useNavigate } from 'react-router'
 
 import ClientsList from '@components/modules/clients/clients-list'
+
+import { routes } from '@router/routes'
 
 const Clients = () => {
   const navigate = useNavigate()
 
-  const location = useLocation()
+  const handleAddClient = () => {
+    navigate(routes.clients.register)
+  }
 
   return (
     <>
       <div className="flex justify-between mt-10">
         <h2 className="text-2xl">Clientes</h2>
 
-        <Button
-          color="default"
-          onPress={() =>
-            navigate(routes.clients.register, {
-              state: { background: location },
-            })
-          }
-          // className="mx-16"
-        >
+        <Button color="primary" onPress={handleAddClient}>
           Agregar
         </Button>
       </div>
 
       <ClientsList />
+      <Outlet />
     </>
   )
 }

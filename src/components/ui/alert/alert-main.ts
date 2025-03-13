@@ -6,7 +6,7 @@ export class Alert {
   > | null = null
 
   register(
-    setAlerts: React.Dispatch<React.SetStateAction<AlertComponentProps[]>>
+    setAlerts: React.Dispatch<React.SetStateAction<AlertComponentProps[]>>,
   ) {
     this.setAlerts = setAlerts
   }
