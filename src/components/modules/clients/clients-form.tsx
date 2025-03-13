@@ -98,7 +98,7 @@ const ClientsForm = () => {
           console.error(error)
         })
     },
-    [emptyFormFields, formType, id, reset]
+    [emptyFormFields, formType, id, reset],
   )
 
   const handleChange = useCallback(
@@ -106,7 +106,7 @@ const ClientsForm = () => {
       setFormFields((prev) => ({ ...prev, [key]: value }))
       setValue(key, value)
     },
-    [setFormFields, setValue]
+    [setFormFields, setValue],
   )
 
   useEffect(() => {

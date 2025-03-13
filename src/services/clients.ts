@@ -13,7 +13,7 @@ export const getClients = async ({
   perPage: number
 }) => {
   const response = await httpRequest.get<ClientsResponse>(
-    envVariables.API_URL_CLIENTS + `?page=${page}&perPage=${perPage}`
+    envVariables.API_URL_CLIENTS + `?page=${page}&perPage=${perPage}`,
   )
   return response
 }
@@ -26,14 +26,14 @@ export const saveClient = async (data: ClientDto) => {
 export const editClient = async (id: string, data: ClientDto) => {
   const response = await httpRequest.patch(
     envVariables.API_URL_CLIENTS + `/${id}`,
-    data
+    data,
   )
   return response
 }
 
 export const deleteClient = async (id: string) => {
   const response = await httpRequest.delete(
-    envVariables.API_URL_CLIENTS + `/${id}`
+    envVariables.API_URL_CLIENTS + `/${id}`,
   )
   return response
 }

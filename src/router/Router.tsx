@@ -11,50 +11,50 @@ import { useLocalStorage } from '@hooks/use-localStorage'
 const AgenciesModule = lazy(() =>
   import('@components/modules/agencies').then((m) => ({
     default: m.AgenciesModule,
-  }))
+  })),
 )
 
 const AgencyForm = lazy(() =>
   import('@components/modules/agencies').then((m) => ({
     default: m.AgencyForm,
-  }))
+  })),
 )
 
 const ClientsModule = lazy(() =>
   import('@components/modules/clients').then((m) => ({
     default: m.ClientsModule,
-  }))
+  })),
 )
 
 const ClientsForm = lazy(() =>
   import('@components/modules/clients').then((m) => ({
     default: m.ClientsForm,
-  }))
+  })),
 )
 
 const Dashboard = lazy(() =>
   import('@components/modules/dashboard').then((m) => ({
     default: m.Dashboard,
-  }))
+  })),
 )
 
 const PropertiesModule = lazy(() =>
   import('@components/modules/properties').then((m) => ({
     default: m.PropertiesModule,
-  }))
+  })),
 )
 
 const PropertyForm = lazy(() =>
   import('@components/modules/properties').then((m) => ({
     default: m.PropertyForm,
-  }))
+  })),
 )
 const LoginModule = lazy(() =>
-  import('@components/modules/login').then((m) => ({ default: m.LoginModule }))
+  import('@components/modules/login').then((m) => ({ default: m.LoginModule })),
 )
 
 const NotFound = lazy(() =>
-  import('@router/NotFound').then((m) => ({ default: m.NotFound }))
+  import('@router/NotFound').then((m) => ({ default: m.NotFound })),
 )
 
 const AuthWrapper = () => {

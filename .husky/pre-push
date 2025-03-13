@@ -1,0 +1,4 @@
+npm run format
+git diff --exit-code || (echo "Please commit after formatting" && exit 1)
+
+npm run lint --fix || (echo "Please fix lint issues before committing" && exit 1)

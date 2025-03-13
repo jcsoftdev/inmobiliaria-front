@@ -117,7 +117,7 @@ const ClientsList = () => {
                                 }),
                                 {
                                   state: { background: location },
-                                }
+                                },
                               )
                             }}
                           >
@@ -130,7 +130,7 @@ const ClientsList = () => {
                             onPress={() =>
                               handleDelete(
                                 client.id,
-                                `${client.name} ${client.lastName}`
+                                `${client.name} ${client.lastName}`,
                               )
                             }
                           >

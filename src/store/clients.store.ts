@@ -6,7 +6,7 @@ import { ClientsState } from '@store/types'
 type ClientStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 
 export const createSetters = (
-  set: Parameters<ClientStateCreator<ClientsState>>[0]
+  set: Parameters<ClientStateCreator<ClientsState>>[0],
 ) => ({
   setClients: (data: Partial<ClientsState>) =>
     set(
@@ -17,14 +17,14 @@ export const createSetters = (
         }
       },
       false,
-      `client/setClients`
+      `client/setClients`,
     ),
   setFormFields: (
     data:
       | Partial<ClientsState['formFields']>
       | ((
-          prev: ClientsState['formFields']
-        ) => Partial<ClientsState['formFields']>)
+          prev: ClientsState['formFields'],
+        ) => Partial<ClientsState['formFields']>),
   ) => {
     set(
       (prev) => ({
@@ -39,7 +39,7 @@ export const createSetters = (
         typeof data === 'function'
           ? 'function update'
           : Object.keys(data).join(', ')
-      }`
+      }`,
     )
   },
   emptyFormFields: () =>
@@ -55,7 +55,7 @@ export const createSetters = (
         },
       }),
       false,
-      `client/emptyFormFields`
+      `client/emptyFormFields`,
     ),
 })
 
@@ -87,5 +87,5 @@ export const useClientsStore = create<ClientsStore>()(
     ? devtools((set) => ({ ...initialClientsState, ...createSetters(set) }), {
         name: 'clients',
       })
-    : (set) => ({ ...initialClientsState, ...createSetters(set) })
+    : (set) => ({ ...initialClientsState, ...createSetters(set) }),
 )

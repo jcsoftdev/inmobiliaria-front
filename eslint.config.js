@@ -2,11 +2,13 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import tseslint from 'typescript-eslint'
 import importPlugin from 'eslint-plugin-import'
 
 export default tseslint.config(
   { ignores: ['dist'] },
+  eslintPluginPrettierRecommended,
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -17,8 +19,7 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'import': importPlugin, // ✅ Fix: Use as an object, not a function
-      
+      import: importPlugin, // ✅ Fix: Use as an object, not a function
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -40,7 +41,11 @@ export default tseslint.config(
             'type',
           ],
           pathGroups: [
-            { pattern: '@components/**', group: 'internal', position: 'before' },
+            {
+              pattern: '@components/**',
+              group: 'internal',
+              position: 'before',
+            },
             { pattern: '@constants/**', group: 'internal', position: 'before' },
             { pattern: '@contracts/**', group: 'internal', position: 'before' },
             { pattern: '@modules/**', group: 'internal', position: 'before' },

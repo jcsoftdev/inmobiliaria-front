@@ -46,7 +46,7 @@ const FormModal = <T extends FieldValues>({
 
   const memoizedProps = useMemo(
     () => ({ isOpen, onOpenChange, handleClose }),
-    [handleClose, isOpen, onOpenChange]
+    [handleClose, isOpen, onOpenChange],
   )
 
   return (

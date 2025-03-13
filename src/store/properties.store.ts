@@ -21,7 +21,7 @@ export const initialPropertiesState: PropertiesState = {
 const createSetters = (
   set: Parameters<
     StateCreator<PropertiesState, [['zustand/devtools', never]], []>
-  >[0]
+  >[0],
 ) => ({
   setProperties: (properties: Partial<PropertiesState>) =>
     set(
@@ -30,7 +30,7 @@ const createSetters = (
         return prev === newState ? prev : newState
       },
       false,
-      'properties/setProperties'
+      'properties/setProperties',
     ),
 
   updateRegistration: (fields: Partial<PropertiesState['registration']>) =>
@@ -45,7 +45,7 @@ const createSetters = (
         }
       },
       false,
-      `properties/updateRegistration=>${Object.keys(fields).join(',')}`
+      `properties/updateRegistration=>${Object.keys(fields).join(',')}`,
     ),
 })
 
@@ -59,6 +59,6 @@ export const usePropertiesStore = create<PropertiesStore>()(
       ...initialPropertiesState,
       ...createSetters(set),
     }),
-    { name: 'properties' }
-  )
+    { name: 'properties' },
+  ),
 )

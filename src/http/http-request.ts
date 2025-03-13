@@ -108,7 +108,7 @@ export class AxiosHttpRequest extends AbstractHttpRequest {
       async (error) => {
         if (error.response?.status === 401) {
           const refreshToken = localStorage.getItem(
-            authStorageKeys.refreshToken
+            authStorageKeys.refreshToken,
           )
           if (!refreshToken) {
             localStorage.removeItem(authStorageKeys.accessToken)
@@ -132,14 +132,14 @@ export class AxiosHttpRequest extends AbstractHttpRequest {
           saveInLocalStorage(authStorageKeys.accessToken, response.access_token)
           saveInLocalStorage(
             authStorageKeys.refreshToken,
-            response.refresh_token
+            response.refresh_token,
           )
 
           return this.axios.request(error.config)
         }
 
         return Promise.reject(new Error(error.response?.data?.message))
-      }
+      },
     )
   }
 
