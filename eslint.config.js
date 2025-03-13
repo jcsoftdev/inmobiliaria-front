@@ -45,6 +45,13 @@ export default tseslint.config(
             { pattern: '@contracts/**', group: 'internal', position: 'before' },
             { pattern: '@modules/**', group: 'internal', position: 'before' },
             { pattern: '@services/**', group: 'internal', position: 'before' },
+            { pattern: '@utils/**', group: 'internal', position: 'before' },
+            { pattern: '@store/**', group: 'internal', position: 'before' },
+            { pattern: '@router/**', group: 'internal', position: 'before' },
+            { pattern: '@hooks/**', group: 'internal', position: 'before' },
+            { pattern: '@http/**', group: 'internal', position: 'before' },
+            { pattern: '@auth/**', group: 'internal', position: 'before' },
+            { pattern: '@assets/**', group: 'internal', position: 'before' },
           ],
           pathGroupsExcludedImportTypes: ['internal'], // Ensure these groups are respected
           'newlines-between': 'always',

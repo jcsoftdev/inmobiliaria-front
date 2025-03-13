@@ -1,6 +1,7 @@
-import { PropertiesState } from '@store/types'
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
+
+import { PropertiesState } from '@store/types'
 
 export const initialPropertiesState: PropertiesState = {
   isLoading: false,

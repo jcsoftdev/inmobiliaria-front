@@ -1,6 +1,5 @@
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/react'
-import { useLocalStorage } from '@hooks/use-localStorage'
 import { useEffect, useId, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
@@ -11,12 +10,14 @@ import {
 
 import { signIn } from '@services/auth'
 
+import { useLocalStorage } from '@hooks/use-localStorage'
+
 import bgImage from '../../../assets/background.png'
 import img from '../../../assets/logo.png'
 import passwordIcon from '../../../assets/password.svg'
 import userIcon from '../../../assets/username.svg'
 
-const Login = () => {
+export const Login = () => {
   const [username, setUsername] = useState('jc2@dev.com')
   const [password, setPassword] = useState('seguro')
 

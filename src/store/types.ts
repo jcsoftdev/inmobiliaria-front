@@ -35,9 +35,9 @@ export type ClientsState = {
   meta?: ClientsResponse['meta']
   isLoading?: boolean
   isError?: boolean
-  registration: {
+  formFields: {
     dni?: string
-    firstName?: string
+    name?: string
     lastName?: string
     email?: string
     address?: string

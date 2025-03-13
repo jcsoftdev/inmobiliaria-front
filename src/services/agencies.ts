@@ -1,9 +1,10 @@
-import { httpRequest } from '@http/http-request'
 
 import { envVariables } from '@constants/variables'
 
 import { Agency } from '@contracts/agencies'
 import { AgenciesResponse } from '@contracts/agencies.response'
+
+import { httpRequest } from '@http/http-request'
 
 export const getAgencies = async ({
    page = 1,

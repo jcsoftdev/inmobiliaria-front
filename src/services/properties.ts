@@ -1,9 +1,10 @@
-import { httpRequest } from '@http/http-request'
 
 import { envVariables } from '@constants/variables'
 
 import { Property } from '@contracts/properties'
 import { PropertiesResponse } from '@contracts/properties.response'
+
+import { httpRequest } from '@http/http-request'
 
 export const getProperties = async ({
   page = 1,

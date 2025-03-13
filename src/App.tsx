@@ -2,12 +2,13 @@ import './App.css'
 
 import { ToastProvider } from '@heroui/react'
 import { HeroUIProvider } from '@heroui/system'
-import { Router } from '@router/Router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createPortal } from 'react-dom'
 import { BrowserRouter } from 'react-router'
 
 import AlertContainer from '@components/ui/alert/alert-container'
+
+import { Router } from '@router/Router'
 
 const client = new QueryClient()
 

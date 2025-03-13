@@ -14,9 +14,10 @@ export abstract class AbstractHttpRequest {
   abstract post<T, B>(url: string, body: B): Promise<T>
   abstract put<T, B>(url: string, body: B): Promise<T>
   abstract delete<T>(url: string): Promise<T>
+  abstract patch<T, B>(url: string, body: B): Promise<T>
 }
 
-export class HttpRequest {
+export class HttpRequest implements AbstractHttpRequest {
   constructor(private readonly http: AbstractHttpRequest) {}
 
   async get<T>(url: string): Promise<T> {
@@ -29,6 +30,10 @@ export class HttpRequest {
 
   async put<T, B>(url: string, body: B): Promise<T> {
     return this.http.put<T, B>(url, body)
+  }
+
+  async patch<T, B>(url: string, body: B): Promise<T> {
+    return this.http.patch<T, B>(url, body)
   }
 
   async delete<T>(url: string): Promise<T> {
@@ -56,6 +61,17 @@ export class FetchHttpRequest extends AbstractHttpRequest {
   async put<T, B>(url: string, body: B): Promise<T> {
     const response = await fetch(url, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+    return response.json()
+  }
+
+  async patch<T, B>(url: string, body: B): Promise<T> {
+    const response = await fetch(url, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -137,6 +153,10 @@ export class AxiosHttpRequest extends AbstractHttpRequest {
 
   async put<T, B>(url: string, body: B): Promise<T> {
     return (await this.axios.put<T>(url, body)).data
+  }
+
+  async patch<T, B>(url: string, body: B): Promise<T> {
+    return (await this.axios.patch<T>(url, body)).data
   }
 
   async delete<T>(url: string): Promise<T> {

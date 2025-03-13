@@ -1,4 +1,4 @@
-import { Pagination, Skeleton } from '@heroui/react'
+import { Pagination } from '@heroui/react'
 import {
   getKeyValue,
   Table,
@@ -8,13 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { useAgenciesStore } from '@store/agencies.store'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+
+import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
 import { AgenciesResponse } from '@contracts/agencies.response'
 
 import { getAgencies } from '@services/agencies'
+
+import { useAgenciesStore } from '@store/agencies.store'
 
 const tableColumns = [
   {
@@ -34,42 +37,6 @@ const tableColumns = [
     title: 'Email',
   },
 ]
-
-const SkeletonTable = ({ columns: c }: { columns: number }) => {
-  const columns = Array.from({ length: c }).map((_, index) => ({
-    index: `${index}`,
-  }))
-  return (
-    <Table aria-label="Agencias" className="pt-4">
-      <TableHeader columns={tableColumns}>
-        {(column) => {
-          return <TableColumn key={column.key}>{column.title}</TableColumn>
-        }}
-      </TableHeader>
-      <TableBody items={columns}>
-        {({ index }) => {
-          return (
-            <TableRow key={index}>
-              {(columnKey) => {
-                console.log({ columnKey })
-
-                return (
-                  <TableCell key={columnKey}>
-                    <div className="py-2">
-                      <Skeleton className="rounded-lg">
-                        <div className="h-8 rounded-lg bg-default-300" />
-                      </Skeleton>
-                    </div>
-                  </TableCell>
-                )
-              }}
-            </TableRow>
-          )
-        }}
-      </TableBody>
-    </Table>
-  )
-}
 
 const AgenciesList = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -97,7 +64,7 @@ const AgenciesList = () => {
   }, [agencies, setAgencies, isLoading, error])
 
   if (isLoading) {
-    return <SkeletonTable columns={perPage} />
+    return <SkeletonTable tableColumns={tableColumns} columns={perPage} />
   }
 
   if (error) {

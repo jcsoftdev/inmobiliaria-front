@@ -1,5 +1,5 @@
 import { Button } from '@heroui/button'
-import { Pagination } from '@heroui/react'
+import { addToast, Pagination } from '@heroui/react'
 import {
   getKeyValue,
   Table,
@@ -9,14 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { usePaginator } from '@hooks/use-paginator'
-import { getDynamicRoute, routes } from '@router/routes'
-import { eventBus } from '@utils/publisher'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import Edit from '@components/icons/edit'
-import Eye from '@components/icons/eye'
 import Trash from '@components/icons/trash'
 import {
   CLIENT_REGISTERED_REFETCH_KEY,
@@ -25,8 +21,16 @@ import {
 import { useGetClients } from '@components/modules/clients/use-get-clients'
 import { tableColumns } from '@components/modules/properties/constants'
 import { alert } from '@components/ui/alert'
-import { SkeletonPagination } from '@components/ui/alert/skeletons/skeleton-pagination'
-import { SkeletonTable } from '@components/ui/alert/skeletons/skeleton-table'
+import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
+import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
+
+import { deleteClient } from '@services/clients'
+
+import { eventBus } from '@utils/publisher'
+
+import { getDynamicRoute, routes } from '@router/routes'
+
+import { usePaginator } from '@hooks/use-paginator'
 
 const ClientsList = () => {
   const { page, setCurrentPage } = usePaginator()
@@ -46,6 +50,31 @@ const ClientsList = () => {
 
     return () => eventBus.off(CLIENT_REGISTERED_REFETCH_KEY, handleUpdate)
   }, [refetch])
+
+  const handleDelete = (id: string, extraInfo?: string) => {
+    alert.fire({
+      title: 'Eliminar Cliente',
+      message: (
+        <>
+          <p className="h-3">¿Estás seguro de eliminar este cliente?</p>
+          <p className="font-semibold">{extraInfo}</p>
+        </>
+      ),
+
+      showConfirmButton: true,
+      showCancelButton: true,
+      onConfirm: () => {
+        deleteClient(id).then(() => {
+          addToast({
+            color: 'warning',
+            title: 'Cliente eliminado',
+          })
+          refetch()
+        })
+      },
+      onCancel: () => {},
+    })
+  }
 
   if (isLoading) {
     return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />
@@ -70,28 +99,18 @@ const ClientsList = () => {
         </TableHeader>
         <TableBody items={clients?.data}>
           {(client) => {
-            console.log({ client })
             return (
               <TableRow key={client.id}>
                 {(columnKey) => {
-                  console.log({ columnKey })
                   if (columnKey === 'actions') {
                     return (
                       <TableCell key={columnKey}>
                         <div className="flex gap-4">
                           <Button
-                            color="primary"
-                            className="text-white"
-                            isIconOnly
-                          >
-                            <Eye />
-                          </Button>
-                          <Button
                             color="warning"
                             isIconOnly
                             className="text-white"
                             onPress={() => {
-                              console.log('Navigate to edit', client.id)
                               navigate(
                                 getDynamicRoute(routes.clients.edit, {
                                   id: client.id,
@@ -108,16 +127,12 @@ const ClientsList = () => {
                             color="danger"
                             isIconOnly
                             className="text-white"
-                            onPress={() => {
-                              alert.fire({
-                                title: 'Eliminar Cliente',
-                                message:
-                                  '¿Estás seguro de eliminar este cliente?',
-                                showConfirmButton: true,
-                                onConfirm: () => {},
-                                showCancelButton: false,
-                              })
-                            }}
+                            onPress={() =>
+                              handleDelete(
+                                client.id,
+                                `${client.name} ${client.lastName}`
+                              )
+                            }
                           >
                             <Trash />
                           </Button>

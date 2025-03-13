@@ -1,6 +1,7 @@
-import { AgenciesState } from '@store/types'
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
+
+import { AgenciesState } from '@store/types'
 
 type AgencyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 export const createSetters = (

@@ -8,7 +8,7 @@ export const routes = {
     home: '/agencies',
     register: '/agencies/register',
   },
-  login: '/login',
+  login: 'login',
   clients: {
     home: '/clients',
     register: '/clients/register',

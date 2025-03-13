@@ -10,8 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { usePaginator } from '@hooks/use-paginator'
-import { eventBus } from '@utils/publisher'
 import { useEffect } from 'react'
 
 import Edit from '@components/icons/edit'
@@ -22,8 +20,12 @@ import {
   tableColumns,
 } from '@components/modules/properties/constants'
 import { useGetProperties } from '@components/modules/properties/use-fetch-properties'
-import { SkeletonPagination } from '@components/ui/alert/skeletons/skeleton-pagination'
-import { SkeletonTable } from '@components/ui/alert/skeletons/skeleton-table'
+import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
+import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
+
+import { eventBus } from '@utils/publisher'
+
+import { usePaginator } from '@hooks/use-paginator'
 
 const statusMap = {
   active: <Chip color="success">Activo</Chip>,

@@ -1,6 +1,7 @@
+import { envVariables } from '@constants/variables'
+
 import { httpRequest } from '@http/http-request'
 
-import { envVariables } from '@constants/variables'
 
 export interface SignInResponse {
   access_token: string

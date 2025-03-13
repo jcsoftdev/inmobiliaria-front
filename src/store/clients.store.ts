@@ -1,6 +1,7 @@
-import { ClientsState } from '@store/types'
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
+
+import { ClientsState } from '@store/types'
 
 type ClientStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 
@@ -18,19 +19,43 @@ export const createSetters = (
       false,
       `client/setClients`
     ),
-  setRegistration: (data: Partial<ClientsState['registration']>) =>
+  setFormFields: (
+    data:
+      | Partial<ClientsState['formFields']>
+      | ((
+          prev: ClientsState['formFields']
+        ) => Partial<ClientsState['formFields']>)
+  ) => {
     set(
-      (prev) => {
-        return {
-          ...prev,
-          registration: {
-            ...prev.registration,
-            ...data,
-          },
-        }
-      },
+      (prev) => ({
+        ...prev,
+        formFields: {
+          ...prev.formFields,
+          ...(typeof data === 'function' ? data(prev.formFields) : data),
+        },
+      }),
       false,
-      `client/setRegistration => ${Object.keys(data).join(', ')}`
+      `client/setFormFields => ${
+        typeof data === 'function'
+          ? 'function update'
+          : Object.keys(data).join(', ')
+      }`
+    )
+  },
+  emptyFormFields: () =>
+    set(
+      (prev) => ({
+        ...prev,
+        formFields: {
+          address: '',
+          email: '',
+          name: '',
+          lastName: '',
+          phone: '',
+        },
+      }),
+      false,
+      `client/emptyFormFields`
     ),
 })
 
@@ -39,10 +64,10 @@ export const initialClientsState: ClientsState = {
   isError: false,
   meta: undefined,
   data: [],
-  registration: {
+  formFields: {
     address: '',
     email: '',
-    firstName: '',
+    name: '',
     lastName: '',
     phone: '',
   },
