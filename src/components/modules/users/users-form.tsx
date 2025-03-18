@@ -1,239 +1,156 @@
-import {
-  addToast,
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/react";
-import { routes } from "@router/routes";
-import useAppStore from "@store/index";
-import { useCallback, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { addToast } from '@heroui/react'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
-import { saveUser } from "@services/users";
+import { USER_REGISTERED_REFETCH_KEY } from '@components/modules/users/constants'
+import { FormUserFields } from '@components/modules/users/form/form-fields'
+import { FormUsersFooter } from '@components/modules/users/form/form-footer'
+import { FormType, Inputs } from '@components/modules/users/types'
+import { FormModal } from '@components/ui/form-modal'
 
-type Inputs = {
-  dni: string;
-  name: string;
-  lastName: string;
-  username: string;
-  email: string;
-  phone: string;
-  role: string;
-  status: string;
-  expiresAt: string;
-  password: string;
-  agencyId: string;
-};
+import { editUser, saveUser } from '@services/users'
 
-const UserForm = () => {
+import { formatDateToISOString } from '@utils/date'
+import { eventBus } from '@utils/publisher'
+
+import { useUsersStore } from '@store/users.store'
+
+import { routes } from '@router/routes'
+
+const UsersForm = () => {
   const {
-    setUsersRegistration,
-    users: { registration },
-  } = useAppStore();
-  const {
-    isOpen,
-    onOpen,
-    onOpenChange,
-    onClose: onCloseModal,
-  } = useDisclosure();
+    data: users,
+    formFields,
 
-  const navigate = useNavigate();
+    setFormFields,
+    emptyFormFields,
+  } = useUsersStore()
+  const { id = '' } = useParams()
+
+  const formType = id ? FormType.EDIT : FormType.ADD
+
+  const form = useForm<Inputs>({
+    defaultValues: formFields,
+  })
   const {
     register,
-    handleSubmit,
     setValue,
-
+    reset,
     formState: { errors },
-  } = useForm<Inputs>({
-    defaultValues: registration,
-  });
+  } = form
 
-  const handleChange = (key: keyof Inputs, value: string) => {
-    setValue(key, value);
-    setUsersRegistration({ [key]: value });
-  };
+  const onSubmit = useCallback(
+    (props: Inputs) => {
+      const formattedExpiresAt = formatDateToISOString(props.expiresAt)
+      if (formType === FormType.ADD) {
+        saveUser({
+          dni: props.dni ?? '',
+          name: props.name ?? '',
+          lastName: props.lastName ?? '',
+          username: props.username ?? '',
+          email: props.email ?? '',
+          phone: props.phone ?? '',
+          role: props.role ?? '',
+          status: 'active',
+          password: props.password ?? '',
+          expiresAt: formattedExpiresAt,
+        })
+          .then(() => {
+            reset()
+            emptyFormFields()
+            addToast({
+              color: 'success',
+              title: 'Usuario guardado',
+            })
+            eventBus.emit(USER_REGISTERED_REFETCH_KEY)
+          })
+          .catch((error) => {
+            addToast({
+              color: 'danger',
+              title: 'No se pudo guardar el cliente',
+              description:
+                error.message ?? 'Hubo un error al guardar el usuario',
+            })
+            console.error(error)
+          })
+        return
+      }
 
-  const onClose = () => {
-    navigate(routes.users.home);
-    onCloseModal();
-  };
-
-  const onSubmit = (props: Inputs) => {
-    setUsersRegistration(props);
-    saveUser({
-      dni: props.dni,
-      name: props.name,
-      lastName: props.lastName,
-      username: props.username,
-      email: props.email,
-      phone: props.phone,
-      role: props.role,
-      status: props.status,
-      password: props.password,
-      expiresAt: props.expiresAt,
-      agencyId: props.agencyId,
-    })
-      .then(() => {
-        addToast({
-          color: "success",
-          variant: "solid",
-          title: "Usuario registrado",
-          description: "El usuario ha sido registrado con éxito",
-          hideCloseButton: true,
-        });
-        onClose();
+      editUser(id, {
+        dni: props.dni ?? '',
+        name: props.name ?? '',
+        lastName: props.lastName ?? '',
+        username: props.username ?? '',
+        email: props.email ?? '',
+        phone: props.phone ?? '',
+        role: props.role ?? '',
+        status: props.status ?? '',
+        password: props.password ?? '',
+        expiresAt: formattedExpiresAt,
       })
-      .catch(() => {
-        addToast({
-          color: "danger",
-          variant: "solid",
-          title: "Error",
-          description: "Hubo un error al registrar al usuario",
-          hideCloseButton: true,
-        });
-      });
-  };
+        .then(() => {
+          reset()
+          emptyFormFields()
+          addToast({
+            color: 'success',
+            title: 'Usuario editado',
+          })
+          eventBus.emit(USER_REGISTERED_REFETCH_KEY)
+        })
+        .catch((error) => {
+          console.log(error)
+          addToast({
+            color: 'danger',
+            title: 'No se pudo editar el usuario',
+            description: error.message ?? 'Hubo un error al editar el usuario',
+          })
+          console.error(error)
+        })
+    },
+    [emptyFormFields, formType, id, reset],
+  )
 
-  const onCancel = useCallback(() => {
-    setUsersRegistration({
-      dni: "",
-      name: "",
-      lastName: "",
-      username: "",
-      email: "",
-      phone: "",
-      role: "",
-      status: "",
-      password: "",
-      experiesAt: "",
-      agencyId: "",
-    });
-  }, [setUsersRegistration]);
+  const handleChange = useCallback(
+    (key: keyof Inputs, value: string) => {
+      setFormFields((prev) => ({ ...prev, [key]: value }))
+      setValue(key, value)
+    },
+    [setFormFields, setValue],
+  )
 
   useEffect(() => {
-    onOpen();
-    return () => {
-      onCancel();
-    };
-  }, [onCancel, onOpen]);
+    if (!id) return
+
+    const data = users?.find((user) => user.id === id)
+    if (data) {
+      setFormFields(data)
+      reset(data)
+    }
+  }, [users, id, reset, setFormFields])
 
   return (
-    <Modal
-      isDismissable={false}
-      isKeyboardDismissDisabled={true}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onClose={onClose}
-      className="p-4"
+    <FormModal
+      form={form}
+      onSubmit={onSubmit}
+      redirectTo={routes.users.home}
+      onClose={emptyFormFields}
     >
-      <ModalContent>
-        <ModalHeader>Agregar Usuario</ModalHeader>
-        <form
-          className="flex flex-col items-end"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="grid gap-4 grid-cols-2 py-4 w-full">
-            <Input
-              label="DNI"
-              {...register("dni", { required: true })}
-              errorMessage={errors.dni ? "Campo requerido" : ""}
-              isInvalid={!!errors.dni}
-              onChange={(e) => handleChange("dni", e.target.value)}
-            />
-            <Input
-              label="Nombre"
-              {...register("name", { required: true })}
-              errorMessage={errors.name ? "Campo requerido" : ""}
-              isInvalid={!!errors.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-            />
-            <Input
-              label="Apellido"
-              {...register("lastName", { required: true })}
-              errorMessage={errors.lastName ? "Campo requerido" : ""}
-              isInvalid={!!errors.lastName}
-              onChange={(e) => handleChange("lastName", e.target.value)}
-            />
-            <Input
-              label="Usuario"
-              {...register("username", { required: true })}
-              errorMessage={errors.username ? "Campo requerido" : ""}
-              isInvalid={!!errors.username}
-              onChange={(e) => handleChange("username", e.target.value)}
-            />
-            <Input
-              label="Email"
-              {...register("email", { required: true })}
-              errorMessage={errors.email ? "Campo requerido" : ""}
-              isInvalid={!!errors.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-            />
-            <Input
-              label="Contraseña"
-              {...register("password", { required: true })}
-              errorMessage={errors.password ? "Campo requerido" : ""}
-              isInvalid={!!errors.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-            />
-            <Input
-              label="Teléfono"
-              {...register("phone", { required: true })}
-              errorMessage={errors.phone ? "Campo requerido" : ""}
-              isInvalid={!!errors.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
-            />
-            <Input
-              label="Rol"
-              {...register("role", { required: true })}
-              errorMessage={errors.role ? "Campo requerido" : ""}
-              isInvalid={!!errors.role}
-              onChange={(e) => handleChange("role", e.target.value)}
-            />
-            <Input
-              label="Id de agencia"
-              {...register("agencyId", { required: true })}
-              errorMessage={errors.agencyId ? "Campo requerido" : ""}
-              isInvalid={!!errors.agencyId}
-              onChange={(e) => handleChange("agencyId", e.target
-                .value)}
-            />
-            <Input
-              label="Fecha de expiración"
-              {...register("expiresAt", { required: true })}
-              errorMessage={errors.expiresAt ? "Campo requerido" : ""}
-              isInvalid={!!errors.expiresAt}
-              onChange={(e) => handleChange("expiresAt", e.target.value)}
-              type="date"
-            />
-          </div>
-          <div className="flex justify-end gap-4">
-            <Button
-              color="primary"
-              variant="bordered"
-              className="my-4 mt-10 min-w-48"
-              onPress={() => {
-                onClose();
-              }}
-              type="button"
-            >
-              Cancelar
-            </Button>
-            <Button
-              color="primary"
-              className="my-4 mt-10 min-w-48"
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </div>
-        </form>
-      </ModalContent>
-    </Modal>
-  );
-};
+      <FormModal.Header>Agregar Usuario</FormModal.Header>
+      <FormModal.Body>
+        <FormUserFields
+          register={register}
+          errors={errors}
+          handleChange={handleChange}
+          fields={formFields}
+          formType={formType}
+        />
+      </FormModal.Body>
+      <FormModal.Footer>
+        {({ onClose }) => <FormUsersFooter onClose={onClose} type={formType} />}
+      </FormModal.Footer>
+    </FormModal>
+  )
+}
 
-export default UserForm;
+export default UsersForm

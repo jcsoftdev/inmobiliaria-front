@@ -1,12 +1,13 @@
 import { useAgenciesStore } from '@store/agencies.store'
 import { useClientsStore } from '@store/clients.store'
 import { usePropertiesStore } from '@store/properties.store'
+import { useUsersStore } from '@store/users.store'
 
 export const useAppStore = () => ({
   properties: usePropertiesStore(),
   agencies: useAgenciesStore(),
 })
 
-export { useAgenciesStore, usePropertiesStore, useClientsStore }
+export { useAgenciesStore, usePropertiesStore, useClientsStore, useUsersStore }
 
 export default useAppStore

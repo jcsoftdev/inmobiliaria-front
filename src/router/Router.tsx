@@ -32,6 +32,18 @@ const ClientsForm = lazy(() =>
   })),
 )
 
+const UsersModule = lazy(() =>
+  import('@components/modules/users').then((m) => ({
+    default: m.UserModule,
+  })),
+)
+
+const UsersForm = lazy(() =>
+  import('@components/modules/users').then((m) => ({
+    default: m.UsersForm,
+  })),
+)
+
 const Dashboard = lazy(() =>
   import('@components/modules/dashboard').then((m) => ({
     default: m.Dashboard,
@@ -113,6 +125,11 @@ export const Router = () => {
             <Route path={routes.clients.home} element={<ClientsModule />}>
               <Route path="register" element={<ClientsForm />} />
               <Route path="edit/:id" element={<ClientsForm />} />
+            </Route>
+
+            <Route path={routes.users.home} element={<UsersModule />}>
+              <Route path="register" element={<UsersForm />} />
+              <Route path="edit/:id" element={<UsersForm />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

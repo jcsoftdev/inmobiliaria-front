@@ -1,50 +1,44 @@
-export const USER_REGISTERED_REFETCH_KEY: symbol = Symbol();
+export const USER_REGISTERED_REFETCH_KEY: symbol = Symbol()
 
-export const tableColumns = [
+export const tableUserColumns = [
   {
-    key: "dni",
-    title: "DNI",
+    key: 'dni',
+    title: 'DNI',
   },
   {
-    key: "name",
-    title: "Nombe",
+    key: 'name',
+    title: 'Nombe',
   },
   {
-    key: "lastName",
-    title: "Apellido",
+    key: 'lastName',
+    title: 'Apellido',
   },
   {
-    key: "username",
-    title: "Usuario",
+    key: 'username',
+    title: 'Usuario',
   },
   {
-    key: "email",
-    title: "Email",
+    key: 'role',
+    title: 'Rol',
   },
   {
-    key: "phone",
-    title: "Teléfono",
+    key: 'email',
+    title: 'Email',
   },
   {
-    key: "status",
-    title: "Estado",
-  },
-  /*
-  {
-    key: "role",
-    title: "Rol",
-  },
-  */
-  {
-    key: "createdAt",
-    title: "Fecha de registro",
+    key: 'status',
+    title: 'Estado',
   },
   {
-    key: "expiresAt",
-    title: "Fecha de expiración",
+    key: 'createdAt',
+    title: 'Fecha de registro',
   },
   {
-    key: "actions",
-    title: "Acciones",
+    key: 'expiresAt',
+    title: 'Fecha de expiración',
   },
-];
+  {
+    key: 'actions',
+    title: 'Acciones',
+  },
+]

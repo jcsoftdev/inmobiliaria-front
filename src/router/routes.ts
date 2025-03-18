@@ -17,6 +17,7 @@ export const routes = {
   users: {
     home: '/users',
     register: '/users/register',
+    edit: '/users/edit/:id',
   },
 } as const
 

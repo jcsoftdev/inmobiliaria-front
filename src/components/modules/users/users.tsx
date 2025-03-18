@@ -1,33 +1,31 @@
-import { Button } from "@heroui/button";
-import { routes } from "@router/routes";
-import { useLocation, useNavigate } from "react-router";
+import { Button } from '@heroui/button'
+import { Outlet, useNavigate } from 'react-router'
 
-import UsersList from "./users-list";
+import { routes } from '@router/routes'
+
+import UsersList from './users-list'
 
 export const Users = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+
+  const handleAddUser = () => {
+    navigate(routes.users.register)
+  }
 
   return (
-    <div>
+    <>
       <div className="flex justify-between mt-10">
-        <h2 className="text-2x1">Usuarios</h2>
-        <Button
-          color="primary"
-          onPress={() =>
-            navigate(routes.users.register, {
-              state: { background: location },
-            })
-          }
-          className=" mx-16"
-        >
+        <h2 className="text-2xl">Usuarios</h2>
+
+        <Button color="primary" onPress={handleAddUser}>
           Agregar
         </Button>
       </div>
 
       <UsersList />
-    </div>
-  );
-};
+      <Outlet />
+    </>
+  )
+}
 
 export default Users
