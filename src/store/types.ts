@@ -1,5 +1,6 @@
 import { AgenciesResponse } from '@contracts/agencies.response'
 import { ClientsResponse } from '@contracts/clients.response'
+import { CompaniesResponse } from '@contracts/companies.response'
 import { PropertiesResponse } from '@contracts/properties.response'
 import { UsersResponse } from '@contracts/users.response'
 
@@ -61,6 +62,20 @@ export type UsersState = {
     status?: string
     dni?: string
     expiresAt?: string
+  }
+}
+
+export type CompaniesState = {
+  data?: CompaniesResponse['data']
+  meta?: CompaniesResponse['meta']
+  isLoading?: boolean
+  isError?: boolean
+  formFields: {
+    name?: string
+    address?: string
+    services?: string
+    email?: string
+    phone?: string
   }
 }
 
