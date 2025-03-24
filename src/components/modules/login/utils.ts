@@ -1,6 +1,7 @@
 export const authStorageKeys = {
   accessToken: 'access_token',
   refreshToken: 'refresh_token',
+  user: 'user',
 }
 
 export const saveInLocalStorage = (key: string, value: string) => {
@@ -12,4 +13,15 @@ export const saveInLocalStorage = (key: string, value: string) => {
   )
 
   localStorage.setItem(key, value)
+}
+
+export const removeLocalStorage = (key: string) => {
+  dispatchEvent(
+    new StorageEvent('storage', {
+      key,
+      newValue: null,
+    }),
+  )
+
+  localStorage.removeItem(key)
 }

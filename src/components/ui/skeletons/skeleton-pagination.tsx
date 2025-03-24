@@ -8,11 +8,13 @@ export const SkeletonPagination = ({ total }: { total: number }) => {
         page={6}
         total={total}
         onChange={() => {}}
-        renderItem={() => (
-          <Skeleton className="rounded-lg w-9">
-            <div className="h-9 rounded-lg bg-default-300 w-full" />
-          </Skeleton>
-        )}
+        renderItem={({ index }) => {
+          return (
+            <Skeleton key={index} className="rounded-lg w-9">
+              <div className="h-9 rounded-lg bg-default-300 w-full" />
+            </Skeleton>
+          )
+        }}
       />
     </div>
   )
