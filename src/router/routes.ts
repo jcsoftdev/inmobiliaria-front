@@ -19,6 +19,11 @@ export const routes = {
     register: '/users/register',
     edit: '/users/edit/:id',
   },
+  companies: {
+    home: '/companies',
+    register: '/companies/register',
+    edit: '/companies/edit/:id',
+  },
 } as const
 
 export const getDynamicRoute = (

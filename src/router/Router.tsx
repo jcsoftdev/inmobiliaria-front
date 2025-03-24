@@ -32,6 +32,18 @@ const ClientsForm = lazy(() =>
   })),
 )
 
+const CompaniesModule = lazy(() =>
+  import('@components/modules/companies').then((m) => ({
+    default: m.CompaniesModule,
+  })),
+)
+
+const CompaniesForm = lazy(() =>
+  import('@components/modules/companies').then((m) => ({
+    default: m.CompaniesForm,
+  })),
+)
+
 const UsersModule = lazy(() =>
   import('@components/modules/users').then((m) => ({
     default: m.UserModule,
@@ -130,6 +142,11 @@ export const Router = () => {
             <Route path={routes.users.home} element={<UsersModule />}>
               <Route path="register" element={<UsersForm />} />
               <Route path="edit/:id" element={<UsersForm />} />
+            </Route>
+
+            <Route path={routes.companies.home} element={<CompaniesModule />}>
+              <Route path="register" element={<CompaniesForm />} />
+              <Route path="edit/:id" element={<CompaniesForm />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
