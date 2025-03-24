@@ -83,7 +83,7 @@ const PropertiesList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={properties?.data}>
+        <TableBody items={properties?.data ?? []}>
           {(property) => {
             return (
               <TableRow key={property.id}>

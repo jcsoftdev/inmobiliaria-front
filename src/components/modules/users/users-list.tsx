@@ -117,7 +117,7 @@ const UsersList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={users?.data}>
+        <TableBody items={users?.data ?? []}>
           {(user) => {
             return (
               <TableRow key={user.id}>

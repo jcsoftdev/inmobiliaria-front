@@ -1,7 +1,9 @@
 export const formatDate = (isoString?: string) => {
   if (!isoString) return ''
   try {
-    const [year, month, day] = isoString.split('T')[0].split('-')
+    const [year, month, day] = formatDateToISOString(isoString)
+      .split('T')[0]
+      .split('-')
     return `${day}/${month}/${year}`
   } catch {
     return ''

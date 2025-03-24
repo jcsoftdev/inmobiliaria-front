@@ -4,7 +4,7 @@ import { UseFormRegister, FieldErrors, UseFormTrigger } from 'react-hook-form'
 import { Inputs, FormType } from '@components/modules/users/types'
 
 interface CustomFieldProps {
-  register?: UseFormRegister<Inputs> // 🔹 register ahora es opcional
+  register?: UseFormRegister<Inputs>
   errors: FieldErrors<Inputs>
   handleChange: (key: keyof Inputs, value: string) => void
   fields: Inputs
@@ -12,13 +12,12 @@ interface CustomFieldProps {
   trigger?: UseFormTrigger<Inputs>
 }
 
-// 📅 Campo de Fecha de Expiración
 export const ExpirationDateField = ({
   register,
   errors,
   handleChange,
   fields,
-  trigger, // 🔹 Se usa para forzar validación manual
+  trigger,
 }: CustomFieldProps) => (
   <Input
     key="expiresAt"
@@ -26,18 +25,17 @@ export const ExpirationDateField = ({
     label="Fecha de expiración"
     errorMessage={errors.expiresAt ? 'Campo requerido' : ''}
     isInvalid={!!errors.expiresAt}
-    value={fields.expiresAt ? fields.expiresAt.split('T')[0] : ''} // Asegura formato YYYY-MM-DD
+    value={fields.expiresAt ? fields.expiresAt.split('T')[0] : ''}
     {...register?.('expiresAt', {
       required: 'Campo requerido',
     })}
     onChange={(e) => {
       handleChange('expiresAt', e.target.value)
-      trigger?.('expiresAt') // 🔹 Forzar validación después del cambio
+      trigger?.('expiresAt')
     }}
   />
 )
 
-// 👤 Campo de Rol
 export const RoleField = ({
   register,
   handleChange,
@@ -50,7 +48,7 @@ export const RoleField = ({
     errorMessage={errors.role ? 'Campo requerido' : ''}
     isInvalid={!!errors.role}
     selectedKeys={fields.role ? new Set([fields.role]) : new Set()}
-    {...register?.('role', { required: 'Campo requerido' })} // 🔹 Validación obligatoria
+    {...register?.('role', { required: 'Campo requerido' })}
     onSelectionChange={(value) => {
       const selectedValue = Array.from(value)[0] as string
       handleChange('role', selectedValue)
@@ -61,15 +59,14 @@ export const RoleField = ({
   </Select>
 )
 
-// ⚡ Campo de Estado
 export const StatusField = ({
   register,
   handleChange,
   fields,
   errors,
-  formType, // 🔹 Para ocultar en "Agregar"
+  formType,
 }: CustomFieldProps) => {
-  if (formType === FormType.ADD) return null // ❌ No mostrar en registro
+  if (formType === FormType.ADD) return null
 
   return (
     <Select

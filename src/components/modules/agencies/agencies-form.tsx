@@ -25,10 +25,6 @@ type Inputs = {
 }
 
 const AgencyForm = () => {
-  // const {
-  //   setAgenciesRegistration,
-  //   agencies: { registration },
-  // } = useAppStore()
   const registration = useAgenciesStore().registration
   const { setAgenciesRegistration } = useAgenciesStore()
   const {

@@ -97,7 +97,7 @@ const ClientsList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={clients?.data}>
+        <TableBody items={clients?.data ?? []}>
           {(client) => {
             return (
               <TableRow key={client.id}>

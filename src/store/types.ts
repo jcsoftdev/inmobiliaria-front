@@ -14,7 +14,7 @@ export type PropertiesState = {
     price?: string
     type?: string
     location?: string
-    amenities?: string // 'algo,otro,algomas'
+    amenities?: string
   }
 }
 

@@ -13,7 +13,7 @@ export class Alert {
 
   fire(props: AlertComponentProps) {
     if (this.setAlerts) {
-      this.setAlerts((prev) => [...prev, props]) // Add new alert to the array
+      this.setAlerts((prev) => [...prev, props])
     } else {
       console.warn('AlertContainer is not mounted yet.')
     }
