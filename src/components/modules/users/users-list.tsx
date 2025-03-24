@@ -1,4 +1,5 @@
 import { Button } from '@heroui/button'
+import { Chip } from '@heroui/chip'
 import { addToast, Pagination } from '@heroui/react'
 import {
   getKeyValue,
@@ -9,35 +10,54 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { useEffect } from 'react'
+import { useEffect, JSX } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import Edit from '@components/icons/edit'
 import Trash from '@components/icons/trash'
-import {
-  CLIENT_REGISTERED_REFETCH_KEY,
-  tableClientColumns,
-} from '@components/modules/clients/constants'
-import { useGetClients } from '@components/modules/clients/use-get-clients'
 import { tableColumns } from '@components/modules/properties/constants'
+import {
+  USER_REGISTERED_REFETCH_KEY,
+  tableUserColumns,
+} from '@components/modules/users/constants'
+import { useGetUsers } from '@components/modules/users/use-get-users'
 import { alert } from '@components/ui/alert'
 import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
-import { deleteClient } from '@services/clients'
+import { deleteUser } from '@services/users'
 
+import { formatDate } from '@utils/date'
 import { eventBus } from '@utils/publisher'
 
 import { getDynamicRoute, routes } from '@router/routes'
 
 import { usePaginator } from '@hooks/use-paginator'
 
-const ClientsList = () => {
+const statusUser: Record<string, JSX.Element> = {
+  active: (
+    <Chip color="success" variant="flat">
+      Activo
+    </Chip>
+  ),
+  inactive: (
+    <Chip color="danger" variant="flat">
+      Inactivo
+    </Chip>
+  ),
+} as const
+
+const roleLabels: Record<string, string> = {
+  admin: 'Administrador',
+  seller: 'Vendedor',
+} as const
+
+const UsersList = () => {
   const { page, setCurrentPage } = usePaginator()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { error, isLoading, clients, refetch, isFetching } = useGetClients({
+  const { error, isLoading, users, refetch, isFetching } = useGetUsers({
     currentPage: +page,
     enabled: true,
   })
@@ -46,17 +66,17 @@ const ClientsList = () => {
     const handleUpdate = () => {
       refetch()
     }
-    eventBus.on(CLIENT_REGISTERED_REFETCH_KEY, handleUpdate)
+    eventBus.on(USER_REGISTERED_REFETCH_KEY, handleUpdate)
 
-    return () => eventBus.off(CLIENT_REGISTERED_REFETCH_KEY, handleUpdate)
+    return () => eventBus.off(USER_REGISTERED_REFETCH_KEY, handleUpdate)
   }, [refetch])
 
   const handleDelete = (id: string, extraInfo?: string) => {
     alert.fire({
-      title: 'Eliminar Cliente',
+      title: 'Eliminar Usuario',
       message: (
         <>
-          <p className="h-3">¿Estás seguro de eliminar este cliente?</p>
+          <p className="h-3">¿Estás seguro de eliminar este usuario?</p>
           <p className="font-semibold">{extraInfo}</p>
         </>
       ),
@@ -64,10 +84,10 @@ const ClientsList = () => {
       showConfirmButton: true,
       showCancelButton: true,
       onConfirm: () => {
-        deleteClient(id).then(() => {
+        deleteUser(id).then(() => {
           addToast({
             color: 'warning',
-            title: 'Cliente eliminado',
+            title: 'Usuario eliminado',
           })
           refetch()
         })
@@ -91,16 +111,16 @@ const ClientsList = () => {
 
   return (
     <div className="">
-      <Table aria-label="Clientes" className="pt-4">
-        <TableHeader columns={tableClientColumns}>
+      <Table aria-label="Usuarios" className="pt-4">
+        <TableHeader columns={tableUserColumns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={clients?.data ?? []}>
-          {(client) => {
+        <TableBody items={users?.data ?? []}>
+          {(user) => {
             return (
-              <TableRow key={client.id}>
+              <TableRow key={user.id}>
                 {(columnKey) => {
                   if (columnKey === 'actions') {
                     return (
@@ -112,12 +132,10 @@ const ClientsList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.clients.edit, {
-                                  id: client.id,
+                                getDynamicRoute(routes.users.edit, {
+                                  id: user.id,
                                 }),
-                                {
-                                  state: { background: location },
-                                },
+                                { state: { background: location } },
                               )
                             }}
                           >
@@ -129,8 +147,8 @@ const ClientsList = () => {
                             className="text-white"
                             onPress={() =>
                               handleDelete(
-                                client.id,
-                                `${client.name} ${client.lastName}`,
+                                user.id,
+                                `${user.name} ${user.lastName}`,
                               )
                             }
                           >
@@ -140,10 +158,40 @@ const ClientsList = () => {
                       </TableCell>
                     )
                   }
+                  if (columnKey === 'status') {
+                    return (
+                      <TableCell key={columnKey}>
+                        {statusUser[user.status] || (
+                          <Chip color="default">Desconocido</Chip>
+                        )}
+                      </TableCell>
+                    )
+                  }
+                  if (columnKey === 'role') {
+                    return (
+                      <TableCell key={columnKey}>
+                        {roleLabels[user.role] || 'Desconocido'}
+                      </TableCell>
+                    )
+                  }
+                  if (columnKey === 'createdAt') {
+                    return (
+                      <TableCell key={columnKey}>
+                        <span>{formatDate(user.createdAt)}</span>
+                      </TableCell>
+                    )
+                  }
+                  if (columnKey === 'expiresAt') {
+                    return (
+                      <TableCell key={columnKey}>
+                        <span>{formatDate(user.expiresAt)}</span>
+                      </TableCell>
+                    )
+                  }
 
                   return (
                     <TableCell key={columnKey}>
-                      {getKeyValue(client, columnKey)}
+                      {getKeyValue(user, columnKey)}
                     </TableCell>
                   )
                 }}
@@ -157,15 +205,15 @@ const ClientsList = () => {
           <Pagination
             color="primary"
             page={+page}
-            total={+(clients?.meta?.lastPage ?? 0)}
+            total={+(users?.meta?.lastPage ?? '')}
             onChange={setCurrentPage}
           />
         </div>
       ) : (
-        <SkeletonPagination total={+(clients?.meta?.lastPage ?? 0)} />
+        <SkeletonPagination total={+(users?.meta?.lastPage ?? 0)} />
       )}
     </div>
   )
 }
 
-export default ClientsList
+export default UsersList

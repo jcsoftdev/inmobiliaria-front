@@ -17,18 +17,10 @@ export const tableColumns = [
     key: 'type',
     title: 'Tipo',
   },
-  // {
-  //   key: 'features',
-  //   title: 'Características',
-  // },
   {
     key: 'status',
     title: 'Estado',
   },
-  // {
-  //   key: 'created_at',
-  //   title: 'Creado',
-  // },
   {
     key: 'actions',
     title: 'Acciones',

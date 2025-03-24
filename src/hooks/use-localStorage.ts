@@ -35,7 +35,6 @@ export const useLocalStorage = <T>(
     }
   }, [getJsonOrString, key])
 
-  // observer to localStorage
   useEffect(() => {
     const listener = (e: StorageEvent) => {
       console.log({ e })

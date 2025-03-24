@@ -24,8 +24,6 @@ export const saveProperty = async (
   const response = await httpRequest.post(envVariables.API_URL_PROPERTIES, {
     ...property,
     status: 'available',
-    agencyId: 1,
-    userId: 1,
     price: parseInt(property.price),
   })
 

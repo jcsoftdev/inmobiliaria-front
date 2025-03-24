@@ -86,7 +86,7 @@ const AgenciesList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={agencies?.data}>
+        <TableBody items={agencies?.data ?? []}>
           {(agency) => {
             return (
               <TableRow key={agency.id}>
