@@ -1,5 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 
+import Profile from '@components/ui/profile/profile'
+
 interface HeaderProps {
   className?: string
   style?: React.CSSProperties
@@ -8,7 +10,7 @@ interface HeaderProps {
 const Header = ({ className, ...props }: HeaderProps) => {
   return (
     <div className={twMerge('', className)} {...props}>
-      header
+      <Profile />
     </div>
   )
 }

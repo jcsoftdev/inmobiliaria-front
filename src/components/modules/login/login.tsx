@@ -1,6 +1,7 @@
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/react'
 import { useEffect, useId, useState } from 'react'
+import { decodeToken } from 'react-jwt'
 import { Link, useNavigate } from 'react-router'
 
 import {
@@ -49,6 +50,13 @@ export const Login = () => {
       .then((res) => {
         saveInLocalStorage(authStorageKeys.accessToken, res.access_token)
         saveInLocalStorage(authStorageKeys.refreshToken, res.refresh_token)
+        const data = decodeToken<{
+          username: string
+          email: string
+          roles: string[]
+          name: string
+        }>(res.access_token)
+        saveInLocalStorage(authStorageKeys.user, JSON.stringify(data))
         // setTimeout(() => {
         navigate('/')
         // }, 1000)
