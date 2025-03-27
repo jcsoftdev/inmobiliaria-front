@@ -24,7 +24,7 @@ export type AgenciesState = {
   meta?: AgenciesResponse['meta']
   isLoading?: boolean
   isError?: boolean
-  registration: {
+  formFields: {
     name?: string
     address?: string
     phone?: string
@@ -78,6 +78,3 @@ export type CompaniesState = {
     phone?: string
   }
 }
-
-export type SetProperties = (properties: PropertiesState) => void
-export type SetAgencies = (agencies: AgenciesState) => void

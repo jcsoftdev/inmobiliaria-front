@@ -114,7 +114,7 @@ const UsersForm = () => {
   const handleChange = useCallback(
     (key: keyof Inputs, value: string) => {
       setFormFields((prev) => ({ ...prev, [key]: value }))
-      setValue(key, value)
+      setValue(key, value, { shouldValidate: true })
     },
     [setFormFields, setValue],
   )
@@ -124,8 +124,15 @@ const UsersForm = () => {
 
     const data = users?.find((user) => user.id === id)
     if (data) {
-      setFormFields(data)
-      reset(data)
+      setFormFields({
+        ...data,
+        expiresAt: formatDateToISOString(data.expiresAt),
+      })
+
+      reset({
+        ...data,
+        expiresAt: formatDateToISOString(data.expiresAt),
+      })
     }
   }, [users, id, reset, setFormFields])
 

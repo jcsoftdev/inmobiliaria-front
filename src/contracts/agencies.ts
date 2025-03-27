@@ -1,8 +1,6 @@
-export interface Agency {
-  id: number
+export interface AgencyDto {
   name: string
   address: string
   phone: string
   email: string
-  created_at: string
 }

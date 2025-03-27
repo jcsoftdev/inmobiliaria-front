@@ -1,173 +1,142 @@
-import {
-  addToast,
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from '@heroui/react'
+import { addToast } from '@heroui/react'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { useParams } from 'react-router'
 
-import { saveAgency } from '@services/agencies'
+import { AGENCY_REGISTERED_REFETCH_KEY } from '@components/modules/agencies/constants'
+import { FormModal } from '@components/ui/form-modal'
+
+import { editAgency, saveAgency } from '@services/agencies'
+
+import { eventBus } from '@utils/publisher'
 
 import { useAgenciesStore } from '@store/agencies.store'
 
 import { routes } from '@router/routes'
 
-type Inputs = {
-  name: string
-  address: string
-  phone: string
-  email: string
-}
+import { FormAgencyFields } from './form/form-fields'
+import { FormAgenciesFooter } from './form/form-footer'
+import { FormType, Inputs } from './types'
 
 const AgencyForm = () => {
-  const registration = useAgenciesStore().registration
-  const { setAgenciesRegistration } = useAgenciesStore()
   const {
-    isOpen,
-    onOpen,
-    onOpenChange,
-    onClose: onCloseModal,
-  } = useDisclosure()
+    data: agencies,
+    formFields,
 
-  const navigate = useNavigate()
+    setFormFields,
+    emptyFormFields,
+  } = useAgenciesStore()
+  const { id = '' } = useParams()
+  const formType = id ? FormType.EDIT : FormType.ADD
+
+  const form = useForm<Inputs>({
+    defaultValues: formFields,
+  })
   const {
     register,
-    handleSubmit,
     setValue,
-
+    reset,
     formState: { errors },
-  } = useForm<Inputs>({
-    defaultValues: registration,
-  })
+  } = form
 
-  const handleChange = (key: keyof Inputs, value: string) => {
-    setValue(key, value)
-    setAgenciesRegistration({ [key]: value })
-  }
-
-  const onClose = () => {
-    navigate(routes.agencies.home)
-    onCloseModal()
-  }
-
-  const onSubmit = (props: Inputs) => {
-    setAgenciesRegistration(props)
-    saveAgency({
-      name: props.name,
-      address: props.address,
-      phone: props.phone,
-      email: props.email,
-    })
-      .then(() => {
-        addToast({
-          color: 'success',
-          variant: 'solid',
-          title: 'Agencia registrada',
-          description: 'La agencia ha sido registrada con éxito',
-          hideCloseButton: true,
+  const onSubmit = useCallback(
+    (props: Inputs) => {
+      if (formType === FormType.ADD) {
+        saveAgency({
+          name: props.name ?? '',
+          address: props.address ?? '',
+          phone: props.phone ?? '',
+          email: props.email ?? '',
         })
-        onClose()
-      })
-      .catch(() => {
-        addToast({
-          color: 'danger',
-          variant: 'solid',
-          title: 'Error',
-          description: 'Hubo un error al registrar la agencia',
-          hideCloseButton: true,
-        })
-      })
-  }
+          .then(() => {
+            reset()
+            emptyFormFields()
+            addToast({
+              color: 'success',
+              title: 'Agencia guardada',
+            })
+            eventBus.emit(AGENCY_REGISTERED_REFETCH_KEY)
+          })
+          .catch((error) => {
+            addToast({
+              color: 'danger',
+              title: 'No se pudo guardar la agencia',
+              description:
+                error.message ?? 'Hubo un error al guardar la agencia',
+            })
+            console.error(error)
+          })
+        return
+      }
 
-  const onCancel = useCallback(() => {
-    setAgenciesRegistration({
-      name: '',
-      address: '',
-      phone: '',
-      email: '',
-    })
-  }, [setAgenciesRegistration])
+      editAgency(id, {
+        name: props.name ?? '',
+        address: props.address ?? '',
+        phone: props.phone ?? '',
+        email: props.email ?? '',
+      })
+        .then(() => {
+          reset()
+          emptyFormFields()
+          addToast({
+            color: 'success',
+            title: 'Agencia editada',
+          })
+          eventBus.emit(AGENCY_REGISTERED_REFETCH_KEY)
+        })
+        .catch((error) => {
+          console.error(error)
+          addToast({
+            color: 'danger',
+            title: 'No se pudo editar la agencia',
+            description: error.message ?? 'Hubo un error al editar la agencia',
+          })
+          console.error(error)
+        })
+    },
+    [emptyFormFields, formType, id, reset],
+  )
+
+  const handleChange = useCallback(
+    (key: keyof Inputs, value: string) => {
+      setFormFields((prev) => ({ ...prev, [key]: value }))
+      setValue(key, value)
+    },
+    [setFormFields, setValue],
+  )
 
   useEffect(() => {
-    onOpen()
-    return () => {
-      onCancel()
+    if (!id) return
+
+    const data = agencies?.find((agency) => agency.id === id)
+    if (data) {
+      setFormFields(data)
+      reset(data)
     }
-  }, [onCancel, onOpen])
+  }, [agencies, id, reset, setFormFields])
 
   return (
-    <Modal
-      isDismissable={false}
-      isKeyboardDismissDisabled={true}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onClose={onClose}
-      className="p-4"
+    <FormModal
+      form={form}
+      onSubmit={onSubmit}
+      redirectTo={routes.agencies.home}
+      onClose={emptyFormFields}
     >
-      <ModalContent>
-        <ModalHeader>Agregar Agencia</ModalHeader>
-        <form
-          className="flex flex-col items-end"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="grid gap-4 grid-cols-2 py-4 w-full">
-            <Input
-              label="Nombre"
-              {...register('name', { required: true })}
-              errorMessage={errors.name ? 'Campo requerido' : ''}
-              isInvalid={!!errors.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-            />
-            <Input
-              label="Dirreción"
-              {...register('address', { required: true })}
-              errorMessage={errors.address ? 'Campo requerido' : ''}
-              isInvalid={!!errors.address}
-              onChange={(e) => handleChange('address', e.target.value)}
-            />
-            <Input
-              label="Teléfono"
-              {...register('phone', { required: true })}
-              errorMessage={errors.phone ? 'Campo requerido' : ''}
-              isInvalid={!!errors.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
-            />
-            <Input
-              label="Email"
-              {...register('email', { required: true })}
-              errorMessage={errors.email ? 'Campo requerido' : ''}
-              isInvalid={!!errors.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-            />
-          </div>
-          <div className="flex justify-end gap-4">
-            <Button
-              color="primary"
-              variant="bordered"
-              className="my-4 mt-10 min-w-48"
-              onPress={() => {
-                onClose()
-              }}
-              type="button"
-            >
-              Cancelar
-            </Button>
-            <Button
-              color="primary"
-              className="my-4 mt-10 min-w-48"
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </div>
-        </form>
-      </ModalContent>
-    </Modal>
+      <FormModal.Header>Agregar Agencia</FormModal.Header>
+      <FormModal.Body>
+        <FormAgencyFields
+          register={register}
+          errors={errors}
+          handleChange={handleChange}
+          fields={formFields}
+        />
+      </FormModal.Body>
+      <FormModal.Footer>
+        {({ onClose }) => (
+          <FormAgenciesFooter onClose={onClose} type={formType} />
+        )}
+      </FormModal.Footer>
+    </FormModal>
   )
 }
 

@@ -3,10 +3,12 @@ export const routes = {
   properties: {
     home: '/properties',
     register: '/properties/register',
+    edit: '/properties/edit/:id',
   },
   agencies: {
     home: '/agencies',
     register: '/agencies/register',
+    edit: '/agencies/edit/:id',
   },
   login: 'login',
   clients: {

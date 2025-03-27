@@ -128,10 +128,12 @@ export const Router = () => {
 
             <Route path={routes.properties.home} element={<PropertiesModule />}>
               <Route path="register" element={<PropertyForm />} />
+              <Route path="edit/:id" element={<PropertyForm />} />
             </Route>
 
             <Route path={routes.agencies.home} element={<AgenciesModule />}>
               <Route path="register" element={<AgencyForm />} />
+              <Route path="edit/:id" element={<AgencyForm />} />
             </Route>
 
             <Route path={routes.clients.home} element={<ClientsModule />}>

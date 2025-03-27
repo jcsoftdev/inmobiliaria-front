@@ -1,4 +1,5 @@
-import { Pagination } from '@heroui/react'
+import { Button } from '@heroui/button'
+import { addToast, Pagination } from '@heroui/react'
 import {
   getKeyValue,
   Table,
@@ -8,63 +9,74 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 
+import Edit from '@components/icons/edit'
+import Trash from '@components/icons/trash'
+import { alert } from '@components/ui/alert'
+import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
-import { AgenciesResponse } from '@contracts/agencies.response'
+import { deleteAgency } from '@services/agencies'
 
-import { getAgencies } from '@services/agencies'
+import { eventBus } from '@utils/publisher'
 
-import { useAgenciesStore } from '@store/agencies.store'
+import { getDynamicRoute, routes } from '@router/routes'
 
-const tableColumns = [
-  {
-    key: 'name',
-    title: 'Nombre',
-  },
-  {
-    key: 'address',
-    title: 'Dirección',
-  },
-  {
-    key: 'phone',
-    title: 'Teléfono',
-  },
-  {
-    key: 'email',
-    title: 'Email',
-  },
-]
+import { usePaginator } from '@hooks/use-paginator'
 
-const AgenciesList = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const perPage = 8
-  const {
-    data: agencies,
-    error,
-    isLoading,
-  } = useQuery<AgenciesResponse>({
-    queryKey: ['agencies', currentPage],
-    queryFn: async () => await getAgencies({ perPage, page: currentPage }),
+import { tableColumns } from '../properties/constants'
+
+import { AGENCY_REGISTERED_REFETCH_KEY, tableAgencyColumns } from './constants'
+import { useGetAgencies } from './use-get-agencies'
+
+const AgencyList = () => {
+  const { page, setCurrentPage } = usePaginator()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const { error, isLoading, agencies, refetch, isFetching } = useGetAgencies({
+    currentPage: +page,
+    enabled: true,
   })
 
-  const { setAgencies } = useAgenciesStore()
-
   useEffect(() => {
-    if (agencies) {
-      setAgencies({
-        data: agencies.data,
-        meta: agencies.meta,
-        isLoading,
-        isError: !!error,
-      })
+    const handleUpdate = () => {
+      refetch()
     }
-  }, [agencies, setAgencies, isLoading, error])
+    eventBus.on(AGENCY_REGISTERED_REFETCH_KEY, handleUpdate)
+
+    return () => eventBus.off(AGENCY_REGISTERED_REFETCH_KEY, handleUpdate)
+  }, [refetch])
+
+  const handleDelete = (id: string, extraInfo?: string) => {
+    alert.fire({
+      title: 'Eliminar Agencia',
+      message: (
+        <>
+          <p className="h-3">¿Estás seguro de eliminar esta agencia?</p>
+          <p className="font-semibold">{extraInfo}</p>
+        </>
+      ),
+
+      showConfirmButton: true,
+      showCancelButton: true,
+      onConfirm: () => {
+        deleteAgency(id).then(() => {
+          addToast({
+            color: 'warning',
+            title: 'Agencia eliminada',
+          })
+          refetch()
+        })
+      },
+      onCancel: () => {},
+    })
+  }
 
   if (isLoading) {
-    return <SkeletonTable tableColumns={tableColumns} columns={perPage} />
+    return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />
   }
 
   if (error) {
@@ -76,12 +88,10 @@ const AgenciesList = () => {
     )
   }
 
-  console.log({ agencies, error, isLoading })
-
   return (
     <div className="">
       <Table aria-label="Agencias" className="pt-4">
-        <TableHeader columns={tableColumns}>
+        <TableHeader columns={tableAgencyColumns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
@@ -91,9 +101,44 @@ const AgenciesList = () => {
             return (
               <TableRow key={agency.id}>
                 {(columnKey) => {
+                  if (columnKey === 'actions') {
+                    return (
+                      <TableCell key={columnKey}>
+                        <div className="flex gap-4">
+                          <Button
+                            color="warning"
+                            isIconOnly
+                            className="text-white"
+                            onPress={() => {
+                              navigate(
+                                getDynamicRoute(routes.agencies.edit, {
+                                  id: agency.id,
+                                }),
+                                {
+                                  state: { background: location },
+                                },
+                              )
+                            }}
+                          >
+                            <Edit />
+                          </Button>
+                          <Button
+                            color="danger"
+                            isIconOnly
+                            className="text-white"
+                            onPress={() =>
+                              handleDelete(agency.id, `${agency.name}`)
+                            }
+                          >
+                            <Trash />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )
+                  }
                   return (
                     <TableCell key={columnKey}>
-                      <span>{getKeyValue(agency, columnKey)}</span>
+                      {getKeyValue(agency, columnKey)}
                     </TableCell>
                   )
                 }}
@@ -102,16 +147,20 @@ const AgenciesList = () => {
           }}
         </TableBody>
       </Table>
-      <div className="py-4">
-        <Pagination
-          color="primary"
-          page={currentPage}
-          total={agencies?.meta.lastPage ?? 0}
-          onChange={setCurrentPage}
-        />
-      </div>
+      {!isLoading && !isFetching ? (
+        <div className="py-4">
+          <Pagination
+            color="primary"
+            page={+page}
+            total={+(agencies?.meta?.lastPage ?? 0)}
+            onChange={setCurrentPage}
+          />
+        </div>
+      ) : (
+        <SkeletonPagination total={+(agencies?.meta?.lastPage ?? 0)} />
+      )}
     </div>
   )
 }
 
-export default AgenciesList
+export default AgencyList

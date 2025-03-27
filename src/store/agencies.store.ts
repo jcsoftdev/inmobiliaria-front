@@ -7,32 +7,53 @@ type AgencyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 export const createSetters = (
   set: Parameters<AgencyStateCreator<AgenciesState>>[0],
 ) => ({
-  setAgenciesRegistration: (
-    registration: Partial<AgenciesState['registration']>,
-  ) =>
-    set(
-      (state) => {
-        return {
-          ...state,
-          registration: {
-            ...state.registration,
-            ...registration,
-          },
-        }
-      },
-      false,
-      `agencies/setAgenciesRegistration=>${Object.keys(registration).join(',')}`,
-    ),
-  setAgencies: (agencies: Partial<AgenciesState>) =>
+  setAgencies: (data: Partial<AgenciesState>) =>
     set(
       (prev) => {
         return {
           ...prev,
-          ...agencies,
+          ...data,
         }
       },
       false,
-      `agencies/setAgencies`,
+      'agencies/setAgencies',
+    ),
+  setFormFields: (
+    data:
+      | Partial<AgenciesState['formFields']>
+      | ((
+          prev: AgenciesState['formFields'],
+        ) => Partial<AgenciesState['formFields']>),
+  ) => {
+    set(
+      (prev) => ({
+        ...prev,
+        formFields: {
+          ...prev.formFields,
+          ...(typeof data === 'function' ? data(prev.formFields) : data),
+        },
+      }),
+      false,
+      `agencies/setFormFields => ${
+        typeof data === 'function'
+          ? 'function update'
+          : Object.keys(data).join(', ')
+      }`,
+    )
+  },
+  emptyFormFields: () =>
+    set(
+      (prev) => ({
+        ...prev,
+        formFields: {
+          name: '',
+          address: '',
+          phone: '',
+          email: '',
+        },
+      }),
+      false,
+      'agencies/emptyFormFields',
     ),
 })
 
@@ -40,8 +61,13 @@ export const initialAgenciesState: AgenciesState = {
   isLoading: false,
   isError: false,
   meta: undefined,
-  data: undefined,
-  registration: {},
+  data: [],
+  formFields: {
+    name: '',
+    address: '',
+    phone: '',
+    email: '',
+  },
 }
 
 type Setters = ReturnType<typeof createSetters>

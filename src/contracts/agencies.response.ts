@@ -4,12 +4,11 @@ export interface AgenciesResponse {
 }
 
 export interface Data {
-  id: number
+  id: string
   name: string
   address: string
   phone: string
   email: string
-  createdAt: string
 }
 
 export interface Meta {
@@ -17,6 +16,6 @@ export interface Meta {
   lastPage: number
   currentPage: number
   perPage: number
-  prev: number
-  next: number
+  prev: number | null
+  next: number | null
 }
