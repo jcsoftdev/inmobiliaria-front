@@ -20,7 +20,7 @@ export const routes: {
   companies: NestedRoutes
 } = {
   dashboard: {
-    path: '/',
+    path: '/dashboard',
     roles: ['admin', 'user'],
     validation: 'hasCompanies',
   },
@@ -30,7 +30,7 @@ export const routes: {
     edit: { path: '/properties/edit/:id', roles: ['admin', 'seller'] },
   },
   agencies: {
-    home: { path: '/agencies', roles: ['admin'] },
+    home: { path: '/agencies', roles: ['admin'], validation: 'hasCompanies' },
     register: { path: '/agencies/register', roles: ['admin'] },
     edit: { path: '/agencies/edit/:id', roles: ['admin'] },
   },

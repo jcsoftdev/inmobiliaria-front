@@ -89,7 +89,6 @@ const ClientsForm = () => {
           eventBus.emit(CLIENT_REGISTERED_REFETCH_KEY)
         })
         .catch((error) => {
-          console.log(error)
           addToast({
             color: 'danger',
             title: 'No se pudo editar el cliente',
