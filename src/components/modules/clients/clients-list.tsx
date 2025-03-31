@@ -112,7 +112,7 @@ const ClientsList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.clients.edit, {
+                                getDynamicRoute(routes.clients.edit.path, {
                                   id: client.id,
                                 }),
                                 {

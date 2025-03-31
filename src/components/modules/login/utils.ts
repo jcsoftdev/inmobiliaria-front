@@ -4,6 +4,16 @@ export const authStorageKeys = {
   user: 'user',
 }
 
+export interface UserStore {
+  email: string
+  name: string
+  exp: number
+  roles: string[]
+  iat: number
+  sub: string
+  username: string
+}
+
 export const saveInLocalStorage = (key: string, value: string) => {
   dispatchEvent(
     new StorageEvent('storage', {

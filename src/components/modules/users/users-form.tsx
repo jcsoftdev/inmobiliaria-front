@@ -140,7 +140,7 @@ const UsersForm = () => {
     <FormModal
       form={form}
       onSubmit={onSubmit}
-      redirectTo={routes.users.home}
+      redirectTo={routes.users.home.path}
       onClose={emptyFormFields}
     >
       <FormModal.Header>Agregar Usuario</FormModal.Header>

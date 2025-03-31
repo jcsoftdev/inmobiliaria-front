@@ -119,7 +119,7 @@ const AgencyForm = () => {
     <FormModal
       form={form}
       onSubmit={onSubmit}
-      redirectTo={routes.agencies.home}
+      redirectTo={routes.agencies.home.path}
       onClose={emptyFormFields}
     >
       <FormModal.Header>Agregar Agencia</FormModal.Header>

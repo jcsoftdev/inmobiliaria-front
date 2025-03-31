@@ -114,7 +114,7 @@ const CompanyList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.companies.edit, {
+                                getDynamicRoute(routes.companies.edit.path, {
                                   id: company.id,
                                 }),
                                 {

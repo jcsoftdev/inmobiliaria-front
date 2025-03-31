@@ -42,7 +42,7 @@ const FormModal = <T extends FieldValues>({
     onOpenChange()
     onCloseProp?.()
     setTimeout(() => {
-      navigate(redirectTo ?? routes.dashboard)
+      navigate(redirectTo ?? routes.dashboard.path)
     }, 300)
   }, [navigate, onCloseProp, onOpenChange, redirectTo])
 

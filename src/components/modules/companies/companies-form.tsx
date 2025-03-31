@@ -121,7 +121,7 @@ const CompaniesForm = () => {
     <FormModal
       form={form}
       onSubmit={onSubmit}
-      redirectTo={routes.companies.home}
+      redirectTo={routes.companies.home.path}
       onClose={emptyFormFields}
     >
       <FormModal.Header>Agregar Empresa</FormModal.Header>

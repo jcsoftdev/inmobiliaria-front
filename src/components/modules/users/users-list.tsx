@@ -132,7 +132,7 @@ const UsersList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.users.edit, {
+                                getDynamicRoute(routes.users.edit.path, {
                                   id: user.id,
                                 }),
                                 { state: { background: location } },
