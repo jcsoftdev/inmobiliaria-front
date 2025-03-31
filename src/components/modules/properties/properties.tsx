@@ -17,7 +17,7 @@ const Properties = () => {
         <Button
           color="primary"
           onPress={() =>
-            navigate(routes.properties.register, {
+            navigate(routes.properties.register.path, {
               state: { background: location },
             })
           }

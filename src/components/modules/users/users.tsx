@@ -9,7 +9,7 @@ export const Users = () => {
   const navigate = useNavigate()
 
   const handleAddUser = () => {
-    navigate(routes.users.register)
+    navigate(routes.users.register.path)
   }
 
   return (

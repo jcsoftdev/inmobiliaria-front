@@ -9,7 +9,7 @@ const Clients = () => {
   const navigate = useNavigate()
 
   const handleAddClient = () => {
-    navigate(routes.clients.register)
+    navigate(routes.clients.register.path)
   }
 
   return (

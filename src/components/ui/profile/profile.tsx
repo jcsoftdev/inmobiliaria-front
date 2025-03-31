@@ -9,20 +9,13 @@ import {
 import {
   authStorageKeys,
   removeLocalStorage,
+  UserStore,
 } from '@components/modules/login/utils'
 
 import { useLocalStorage } from '@hooks/use-localStorage'
 
 const Profile = () => {
-  const [data] = useLocalStorage<{
-    email: string
-    name: string
-    exp: number
-    roles: string[]
-    iat: number
-    sub: string
-    username: string
-  }>(authStorageKeys.user, {
+  const [data] = useLocalStorage<UserStore>(authStorageKeys.user, {
     email: '',
     name: '',
     exp: 0,

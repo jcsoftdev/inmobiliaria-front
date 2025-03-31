@@ -9,7 +9,7 @@ const Companies = () => {
   const navigate = useNavigate()
 
   const handleAddCompany = () => {
-    navigate(routes.companies.register)
+    navigate(routes.companies.register.path)
   }
 
   return (

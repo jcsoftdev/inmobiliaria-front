@@ -8,8 +8,8 @@ import AgenciesList from './agencies-list'
 export const Agencies = () => {
   const navigate = useNavigate()
 
-  const handleAddAgeny = () => {
-    navigate(routes.agencies.register)
+  const handleAddAgency = () => {
+    navigate(routes.agencies.register.path)
   }
 
   return (
@@ -17,7 +17,7 @@ export const Agencies = () => {
       <div className="flex justify-between mt-10">
         <h2 className="text-2xl">Agencias</h2>
 
-        <Button color="primary" onPress={handleAddAgeny}>
+        <Button color="primary" onPress={handleAddAgency}>
           Agregar
         </Button>
       </div>

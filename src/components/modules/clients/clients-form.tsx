@@ -123,7 +123,7 @@ const ClientsForm = () => {
     <FormModal
       form={form}
       onSubmit={onSubmit}
-      redirectTo={routes.clients.home}
+      redirectTo={routes.clients.home.path}
       onClose={emptyFormFields}
     >
       <FormModal.Header>Agregar Cliente</FormModal.Header>

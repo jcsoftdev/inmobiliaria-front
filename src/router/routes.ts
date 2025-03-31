@@ -1,32 +1,56 @@
-export const routes = {
-  dashboard: '/',
+import { ValidationsKeys } from '@utils/validations'
+
+type Route = {
+  path: string
+  roles: string[]
+  validation?: ValidationsKeys
+}
+
+type NestedRoutes = {
+  [key: string]: Route
+}
+
+export const routes: {
+  dashboard: Route
+  properties: NestedRoutes
+  agencies: NestedRoutes
+  login: Route
+  clients: NestedRoutes
+  users: NestedRoutes
+  companies: NestedRoutes
+} = {
+  dashboard: {
+    path: '/',
+    roles: ['admin', 'user'],
+    validation: 'hasCompanies',
+  },
   properties: {
-    home: '/properties',
-    register: '/properties/register',
-    edit: '/properties/edit/:id',
+    home: { path: '/properties', roles: ['admin', 'seller'] },
+    register: { path: '/properties/register', roles: ['admin', 'seller'] },
+    edit: { path: '/properties/edit/:id', roles: ['admin', 'seller'] },
   },
   agencies: {
-    home: '/agencies',
-    register: '/agencies/register',
-    edit: '/agencies/edit/:id',
+    home: { path: '/agencies', roles: ['admin'] },
+    register: { path: '/agencies/register', roles: ['admin'] },
+    edit: { path: '/agencies/edit/:id', roles: ['admin'] },
   },
-  login: 'login',
+  login: { path: '/login', roles: [] },
   clients: {
-    home: '/clients',
-    register: '/clients/register',
-    edit: '/clients/edit/:id',
+    home: { path: '/clients', roles: ['admin', 'seller'] },
+    register: { path: '/clients/register', roles: ['admin', 'seller'] },
+    edit: { path: '/clients/edit/:id', roles: ['admin', 'seller'] },
   },
   users: {
-    home: '/users',
-    register: '/users/register',
-    edit: '/users/edit/:id',
+    home: { path: '/users', roles: ['admin'] },
+    register: { path: '/users/register', roles: ['admin'] },
+    edit: { path: '/users/edit/:id', roles: ['admin'] },
   },
   companies: {
-    home: '/companies',
-    register: '/companies/register',
-    edit: '/companies/edit/:id',
+    home: { path: '/companies', roles: ['admin'] },
+    register: { path: '/companies/register', roles: ['admin'] },
+    edit: { path: '/companies/edit/:id', roles: ['admin'] },
   },
-} as const
+}
 
 export const getDynamicRoute = (
   route: string,

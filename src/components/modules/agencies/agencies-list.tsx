@@ -111,7 +111,7 @@ const AgencyList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.agencies.edit, {
+                                getDynamicRoute(routes.agencies.edit.path, {
                                   id: agency.id,
                                 }),
                                 {
