@@ -37,7 +37,6 @@ export const useLocalStorage = <T>(
 
   useEffect(() => {
     const listener = (e: StorageEvent) => {
-      console.log({ e })
       if (e.key === key) {
         setValue(getJsonOrString(e.newValue as T))
       }

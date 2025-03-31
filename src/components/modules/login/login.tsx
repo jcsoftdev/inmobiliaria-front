@@ -11,7 +11,8 @@ import {
 
 import { signIn } from '@services/auth'
 
-import { useLocalStorage } from '@hooks/use-localStorage'
+import { saveInIndexedDB } from '@hooks/use-indexeddb-storage'
+import { useLocalStorage } from '@hooks/use-local-storage'
 
 import bgImage from '../../../assets/background.png'
 import img from '../../../assets/logo.png'
@@ -34,7 +35,6 @@ export const Login = () => {
 
   useEffect(() => {
     if (token) {
-      console.log('redirecting to /')
       navigate('/')
     }
   }, [token, navigate])
@@ -56,10 +56,8 @@ export const Login = () => {
           roles: string[]
           name: string
         }>(res.access_token)
-        saveInLocalStorage(authStorageKeys.user, JSON.stringify(data))
-        // setTimeout(() => {
+        saveInIndexedDB(authStorageKeys.user, data)
         navigate('/')
-        // }, 1000)
       })
       .catch(() => {
         setHasError(true)

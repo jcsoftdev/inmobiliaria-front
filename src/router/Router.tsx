@@ -1,14 +1,19 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { Route, Routes, Navigate, Outlet } from 'react-router'
 
 import { Footer, Header, Layout, Sidebar } from '@components/layout'
-import { authStorageKeys, UserStore } from '@components/modules/login/utils'
+import {
+  authStorageKeys,
+  removeLocalStorage,
+  UserStore,
+} from '@components/modules/login/utils'
 
 import { validations, ValidationsKeys } from '@utils/validations'
 
 import { routes } from '@router/routes'
 
-import { useLocalStorage } from '@hooks/use-localStorage'
+import { useIndexedDBStorage } from '@hooks/use-indexeddb-storage'
+import { useLocalStorage } from '@hooks/use-local-storage'
 
 const AgenciesModule = lazy(() =>
   import('@components/modules/agencies').then((m) => ({
@@ -88,7 +93,6 @@ const AuthWrapper = () => {
   const currentPath = window.location.pathname
 
   if (!token && !currentPath.includes(routes.login.path)) {
-    console.log('redirecting to login')
     return <Navigate to={routes.login.path} relative="path" />
   }
 
@@ -105,15 +109,58 @@ const RouteGuard = ({
   validation?: ValidationsKeys
 }) => {
   const [token] = useLocalStorage(authStorageKeys.accessToken, '')
-  const [user] = useLocalStorage<UserStore>(authStorageKeys.user, {
-    email: '',
-    name: '',
-    exp: 0,
-    roles: [],
-    iat: 0,
-    sub: '',
-    username: '',
-  })
+  const { value: user, error } = useIndexedDBStorage<UserStore>(
+    authStorageKeys.user,
+  )
+
+  const [isAsyncValid, setIsAsyncValid] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (validation) {
+      const validationFn = validations[validation]
+      const isValid = validationFn()
+
+      if (isValid instanceof Promise) {
+        setIsAsyncValid(null)
+        isValid
+          .then((result) => {
+            if (isMounted) setIsAsyncValid(!!result)
+          })
+          .catch(() => {
+            if (isMounted) setIsAsyncValid(false)
+          })
+      } else {
+        setIsAsyncValid(isValid)
+      }
+    } else {
+      setIsAsyncValid(true)
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [validation])
+
+  if (error) {
+    removeLocalStorage(authStorageKeys.accessToken)
+    return (
+      <Navigate
+        to={routes.login.path}
+        replace
+        state={{ error: 'Error retrieving user data' }}
+      />
+    )
+  }
+
+  if (user === null) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-sky-700"></div>
+      </div>
+    )
+  }
 
   if (!token) {
     console.log('Access denied. Redirecting to login.')
@@ -125,7 +172,15 @@ const RouteGuard = ({
     return <Navigate to={routes.dashboard.path} replace />
   }
 
-  if (validation && !validations[validation]()) {
+  if (isAsyncValid === null) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-sky-700"></div>
+      </div>
+    )
+  }
+
+  if (!isAsyncValid) {
     console.log('Access denied. Validation failed.')
     return <Navigate to={routes.dashboard.path} replace />
   }
@@ -135,45 +190,47 @@ const RouteGuard = ({
 
 export const Router = () => {
   return (
-    <Suspense
-      fallback={
-        <Layout footer={Footer} header={Header} sidebar={Sidebar}>
-          <div className="flex items-center justify-center h-screen">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-sky-700"></div>
-          </div>
-        </Layout>
-      }
-    >
-      <Routes>
-        <Route
-          path={routes.login.path}
-          element={
-            <Suspense
-              fallback={
-                <div className="w-full h-screen grid place-content-center">
-                  Cargando login...
-                </div>
-              }
-            >
-              <LoginModule />
-            </Suspense>
-          }
-        />
+    <Routes>
+      <Route
+        path={routes.login.path}
+        element={
+          <Suspense
+            fallback={
+              <div className="w-full h-screen grid place-content-center">
+                Cargando login...
+              </div>
+            }
+          >
+            <LoginModule />
+          </Suspense>
+        }
+      />
 
-        <Route
-          element={<Layout footer={Footer} header={Header} sidebar={Sidebar} />}
-        >
-          <Route element={<AuthWrapper />}>
+      <Route
+        element={<Layout footer={Footer} header={Header} sidebar={Sidebar} />}
+      >
+        <Route element={<AuthWrapper />}>
+          <Route
+            index
+            element={<Navigate to={routes.dashboard.path} relative="path" />}
+          />
+
+          <Route
+            path={routes.dashboard.path}
+            element={
+              <RouteGuard
+                allowedRoles={routes.dashboard.roles}
+                validation={undefined}
+              >
+                <Dashboard />
+              </RouteGuard>
+            }
+          />
+
+          {/* Properties routes */}
+          <Route path={routes.properties.home.path}>
             <Route
               index
-              element={
-                //  is missing the RouteGuard
-                <Dashboard />
-              }
-            />
-
-            <Route
-              path={routes.properties.home.path}
               element={
                 <RouteGuard
                   allowedRoles={routes.properties.home.roles}
@@ -182,13 +239,29 @@ export const Router = () => {
                   <PropertiesModule />
                 </RouteGuard>
               }
-            >
-              <Route path="register" element={<PropertyForm />} />
-              <Route path="edit/:id" element={<PropertyForm />} />
-            </Route>
-
+            />
             <Route
-              path={routes.agencies.home.path}
+              path="register"
+              element={
+                <RouteGuard allowedRoles={routes.properties.register.roles}>
+                  <PropertyForm />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="edit/:id"
+              element={
+                <RouteGuard allowedRoles={routes.properties.edit.roles}>
+                  <PropertyForm />
+                </RouteGuard>
+              }
+            />
+          </Route>
+
+          {/* Agencies routes */}
+          <Route path={routes.agencies.home.path}>
+            <Route
+              index
               element={
                 <RouteGuard
                   allowedRoles={routes.agencies.home.roles}
@@ -197,13 +270,29 @@ export const Router = () => {
                   <AgenciesModule />
                 </RouteGuard>
               }
-            >
-              <Route path="register" element={<AgencyForm />} />
-              <Route path="edit/:id" element={<AgencyForm />} />
-            </Route>
-
+            />
             <Route
-              path={routes.clients.home.path}
+              path="register"
+              element={
+                <RouteGuard allowedRoles={routes.agencies.register.roles}>
+                  <AgencyForm />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="edit/:id"
+              element={
+                <RouteGuard allowedRoles={routes.agencies.edit.roles}>
+                  <AgencyForm />
+                </RouteGuard>
+              }
+            />
+          </Route>
+
+          {/* Clients routes */}
+          <Route path={routes.clients.home.path}>
+            <Route
+              index
               element={
                 <RouteGuard
                   allowedRoles={routes.clients.home.roles}
@@ -212,13 +301,29 @@ export const Router = () => {
                   <ClientsModule />
                 </RouteGuard>
               }
-            >
-              <Route path="register" element={<ClientsForm />} />
-              <Route path="edit/:id" element={<ClientsForm />} />
-            </Route>
-
+            />
             <Route
-              path={routes.users.home.path}
+              path="register"
+              element={
+                <RouteGuard allowedRoles={routes.clients.register.roles}>
+                  <ClientsForm />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="edit/:id"
+              element={
+                <RouteGuard allowedRoles={routes.clients.edit.roles}>
+                  <ClientsForm />
+                </RouteGuard>
+              }
+            />
+          </Route>
+
+          {/* Users routes */}
+          <Route path={routes.users.home.path}>
+            <Route
+              index
               element={
                 <RouteGuard
                   allowedRoles={routes.users.home.roles}
@@ -227,13 +332,29 @@ export const Router = () => {
                   <UsersModule />
                 </RouteGuard>
               }
-            >
-              <Route path="register" element={<UsersForm />} />
-              <Route path="edit/:id" element={<UsersForm />} />
-            </Route>
-
+            />
             <Route
-              path={routes.companies.home.path}
+              path="register"
+              element={
+                <RouteGuard allowedRoles={routes.users.register.roles}>
+                  <UsersForm />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="edit/:id"
+              element={
+                <RouteGuard allowedRoles={routes.users.edit.roles}>
+                  <UsersForm />
+                </RouteGuard>
+              }
+            />
+          </Route>
+
+          {/* Companies routes */}
+          <Route path={routes.companies.home.path}>
+            <Route
+              index
               element={
                 <RouteGuard
                   allowedRoles={routes.companies.home.roles}
@@ -242,16 +363,30 @@ export const Router = () => {
                   <CompaniesModule />
                 </RouteGuard>
               }
-            >
-              <Route path="register" element={<CompaniesForm />} />
-              <Route path="edit/:id" element={<CompaniesForm />} />
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
+            />
+            <Route
+              path="register"
+              element={
+                <RouteGuard allowedRoles={routes.companies.register.roles}>
+                  <CompaniesForm />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="edit/:id"
+              element={
+                <RouteGuard allowedRoles={routes.companies.edit.roles}>
+                  <CompaniesForm />
+                </RouteGuard>
+              }
+            />
           </Route>
+
+          {/* Fallback route */}
+          <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }

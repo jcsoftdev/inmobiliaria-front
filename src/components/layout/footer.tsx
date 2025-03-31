@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface FooterProps {
@@ -20,4 +21,4 @@ const Footer = ({ className, ...props }: FooterProps) => {
   )
 }
 
-export default Footer
+export default memo(Footer)

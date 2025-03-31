@@ -12,6 +12,8 @@ export interface UserStore {
   iat: number
   sub: string
   username: string
+  // hasAgencies: boolean
+  hasCompanies: boolean
 }
 
 export const saveInLocalStorage = (key: string, value: string) => {
@@ -34,4 +36,18 @@ export const removeLocalStorage = (key: string) => {
   )
 
   localStorage.removeItem(key)
+}
+
+export const getLocalStorage = <T>(
+  key: string,
+  callback?: (newValue: string | null) => void,
+) => {
+  if (callback) {
+    window.addEventListener('storage', (event) => {
+      if (event.key === key) {
+        callback(event.newValue)
+      }
+    })
+  }
+  return localStorage.getItem(key) as T | null
 }
