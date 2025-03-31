@@ -1,13 +1,14 @@
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-import { AgenciesState } from '@store/types'
+import { CompaniesState } from './types'
 
-type AgencyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
+type CompanyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
+
 export const createSetters = (
-  set: Parameters<AgencyStateCreator<AgenciesState>>[0],
+  set: Parameters<CompanyStateCreator<CompaniesState>>[0],
 ) => ({
-  setAgencies: (data: Partial<AgenciesState>) =>
+  setCompanies: (data: Partial<CompaniesState>) =>
     set(
       (prev) => {
         return {
@@ -16,14 +17,14 @@ export const createSetters = (
         }
       },
       false,
-      'agencies/setAgencies',
+      'company/setCompanies',
     ),
   setFormFields: (
     data:
-      | Partial<AgenciesState['formFields']>
+      | Partial<CompaniesState['formFields']>
       | ((
-          prev: AgenciesState['formFields'],
-        ) => Partial<AgenciesState['formFields']>),
+          prev: CompaniesState['formFields'],
+        ) => Partial<CompaniesState['formFields']>),
   ) => {
     set(
       (prev) => ({
@@ -34,7 +35,7 @@ export const createSetters = (
         },
       }),
       false,
-      `agencies/setFormFields => ${
+      `company/setFormFields => ${
         typeof data === 'function'
           ? 'function update'
           : Object.keys(data).join(', ')
@@ -48,16 +49,17 @@ export const createSetters = (
         formFields: {
           name: '',
           address: '',
-          phone: '',
+          services: '',
           email: '',
+          phone: '',
         },
       }),
       false,
-      'agencies/emptyFormFields',
+      'company/emptyFormFields',
     ),
 })
 
-export const initialAgenciesState: AgenciesState = {
+export const initialCompaniesState: CompaniesState = {
   isLoading: false,
   isError: false,
   meta: undefined,
@@ -65,24 +67,27 @@ export const initialAgenciesState: AgenciesState = {
   formFields: {
     name: '',
     address: '',
-    phone: '',
+    services: '',
     email: '',
+    phone: '',
   },
 }
 
 type Setters = ReturnType<typeof createSetters>
 
-type AgenciesStore = AgenciesState & Setters
+type CompaniesStore = CompaniesState & Setters
 
-export const createAgencySlice: AgencyStateCreator<AgenciesStore> = (set) => ({
-  ...initialAgenciesState,
+export const createAgencySlice: CompanyStateCreator<CompaniesStore> = (
+  set,
+) => ({
+  ...initialCompaniesState,
   ...createSetters(set),
 })
 
-export const useAgenciesStore = create<AgenciesStore>()(
+export const useCompaniesStore = create<CompaniesStore>()(
   import.meta.env.MODE === 'development'
-    ? devtools((set) => ({ ...initialAgenciesState, ...createSetters(set) }), {
-        name: 'agencies',
+    ? devtools((set) => ({ ...initialCompaniesState, ...createSetters(set) }), {
+        name: 'companies',
       })
-    : (set) => ({ ...initialAgenciesState, ...createSetters(set) }),
+    : (set) => ({ ...initialCompaniesState, ...createSetters(set) }),
 )

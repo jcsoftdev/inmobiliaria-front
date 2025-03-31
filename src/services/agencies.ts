@@ -1,28 +1,39 @@
 import { envVariables } from '@constants/variables'
 
-import { Agency } from '@contracts/agencies'
+import { AgencyDto } from '@contracts/agencies'
 import { AgenciesResponse } from '@contracts/agencies.response'
 
 import { httpRequest } from '@http/http-request'
 
 export const getAgencies = async ({
-  page = 1,
-  perPage = 10,
+  page,
+  perPage,
 }: {
   page?: number
   perPage?: number
-}): Promise<AgenciesResponse> => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
+}) => {
   const response = await httpRequest.get<AgenciesResponse>(
     envVariables.API_URL_AGENCIES + `?page=${page}&perPage=${perPage}`,
   )
   return response
 }
 
-export const saveAgency = async (agency: Omit<Agency, 'id' | 'created_at'>) => {
-  const response = await httpRequest.post(envVariables.API_URL_AGENCIES, {
-    ...agency,
-  })
+export const saveAgency = async (data: AgencyDto) => {
+  const response = await httpRequest.post(envVariables.API_URL_AGENCIES, data)
+  return response
+}
+
+export const editAgency = async (id: string, data: AgencyDto) => {
+  const response = await httpRequest.patch(
+    envVariables.API_URL_AGENCIES + `/${id}`,
+    data,
+  )
+  return response
+}
+
+export const deleteAgency = async (id: string) => {
+  const response = await httpRequest.delete(
+    envVariables.API_URL_AGENCIES + `/${id}`,
+  )
   return response
 }

@@ -3,29 +3,29 @@ import { Outlet, useNavigate } from 'react-router'
 
 import { routes } from '@router/routes'
 
-import AgenciesList from './agencies-list'
+import CompanyList from './companies-list'
 
-export const Agencies = () => {
+const Companies = () => {
   const navigate = useNavigate()
 
-  const handleAddAgeny = () => {
-    navigate(routes.agencies.register)
+  const handleAddCompany = () => {
+    navigate(routes.companies.register)
   }
 
   return (
     <>
       <div className="flex justify-between mt-10">
-        <h2 className="text-2xl">Agencias</h2>
+        <h2 className="text-2xl">Empresas</h2>
 
-        <Button color="primary" onPress={handleAddAgeny}>
+        <Button color="primary" onPress={handleAddCompany}>
           Agregar
         </Button>
       </div>
 
-      <AgenciesList />
+      <CompanyList />
       <Outlet />
     </>
   )
 }
 
-export default Agencies
+export default Companies

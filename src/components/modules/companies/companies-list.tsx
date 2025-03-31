@@ -18,7 +18,7 @@ import { alert } from '@components/ui/alert'
 import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
-import { deleteAgency } from '@services/agencies'
+import { deleteCompany } from '@services/companies'
 
 import { eventBus } from '@utils/publisher'
 
@@ -28,15 +28,18 @@ import { usePaginator } from '@hooks/use-paginator'
 
 import { tableColumns } from '../properties/constants'
 
-import { AGENCY_REGISTERED_REFETCH_KEY, tableAgencyColumns } from './constants'
-import { useGetAgencies } from './use-get-agencies'
+import {
+  COMPANY_REGISTERED_REFETCH_KEY,
+  tableCompanyColumns,
+} from './constants'
+import { useGetCompanies } from './use-get-companies'
 
-const AgencyList = () => {
+const CompanyList = () => {
   const { page, setCurrentPage } = usePaginator()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { error, isLoading, agencies, refetch, isFetching } = useGetAgencies({
+  const { error, isLoading, companies, refetch, isFetching } = useGetCompanies({
     currentPage: +page,
     enabled: true,
   })
@@ -45,17 +48,17 @@ const AgencyList = () => {
     const handleUpdate = () => {
       refetch()
     }
-    eventBus.on(AGENCY_REGISTERED_REFETCH_KEY, handleUpdate)
+    eventBus.on(COMPANY_REGISTERED_REFETCH_KEY, handleUpdate)
 
-    return () => eventBus.off(AGENCY_REGISTERED_REFETCH_KEY, handleUpdate)
+    return () => eventBus.off(COMPANY_REGISTERED_REFETCH_KEY, handleUpdate)
   }, [refetch])
 
   const handleDelete = (id: string, extraInfo?: string) => {
     alert.fire({
-      title: 'Eliminar Agencia',
+      title: 'Eliminar Empresa',
       message: (
         <>
-          <p className="h-3">¿Estás seguro de eliminar esta agencia?</p>
+          <p className="h-3">¿Estás seguro de eliminar esta empresa?</p>
           <p className="font-semibold">{extraInfo}</p>
         </>
       ),
@@ -63,10 +66,10 @@ const AgencyList = () => {
       showConfirmButton: true,
       showCancelButton: true,
       onConfirm: () => {
-        deleteAgency(id).then(() => {
+        deleteCompany(id).then(() => {
           addToast({
             color: 'warning',
-            title: 'Agencia eliminada',
+            title: 'Empresa eliminada',
           })
           refetch()
         })
@@ -90,16 +93,16 @@ const AgencyList = () => {
 
   return (
     <div className="">
-      <Table aria-label="Agencias" className="pt-4">
-        <TableHeader columns={tableAgencyColumns}>
+      <Table aria-label="Empresas" className="pt-4">
+        <TableHeader columns={tableCompanyColumns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={agencies?.data ?? []}>
-          {(agency) => {
+        <TableBody items={companies?.data}>
+          {(company) => {
             return (
-              <TableRow key={agency.id}>
+              <TableRow key={company.id}>
                 {(columnKey) => {
                   if (columnKey === 'actions') {
                     return (
@@ -111,8 +114,8 @@ const AgencyList = () => {
                             className="text-white"
                             onPress={() => {
                               navigate(
-                                getDynamicRoute(routes.agencies.edit, {
-                                  id: agency.id,
+                                getDynamicRoute(routes.companies.edit, {
+                                  id: company.id,
                                 }),
                                 {
                                   state: { background: location },
@@ -127,7 +130,7 @@ const AgencyList = () => {
                             isIconOnly
                             className="text-white"
                             onPress={() =>
-                              handleDelete(agency.id, `${agency.name}`)
+                              handleDelete(company.id, `${company.name}`)
                             }
                           >
                             <Trash />
@@ -138,7 +141,7 @@ const AgencyList = () => {
                   }
                   return (
                     <TableCell key={columnKey}>
-                      {getKeyValue(agency, columnKey)}
+                      {getKeyValue(company, columnKey)}
                     </TableCell>
                   )
                 }}
@@ -152,15 +155,15 @@ const AgencyList = () => {
           <Pagination
             color="primary"
             page={+page}
-            total={+(agencies?.meta?.lastPage ?? 0)}
+            total={+(companies?.meta?.lastPage ?? 0)}
             onChange={setCurrentPage}
           />
         </div>
       ) : (
-        <SkeletonPagination total={+(agencies?.meta?.lastPage ?? 0)} />
+        <SkeletonPagination total={+(companies?.meta?.lastPage ?? 0)} />
       )}
     </div>
   )
 }
 
-export default AgencyList
+export default CompanyList

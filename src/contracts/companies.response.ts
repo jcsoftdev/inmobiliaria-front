@@ -1,4 +1,4 @@
-export interface AgenciesResponse {
+export interface CompaniesResponse {
   data: Data[]
   meta: Meta
 }
@@ -7,8 +7,9 @@ export interface Data {
   id: string
   name: string
   address: string
-  phone: string
+  services: string
   email: string
+  phone: string
 }
 
 export interface Meta {

@@ -1,6 +1,6 @@
 export const AGENCY_REGISTERED_REFETCH_KEY: symbol = Symbol()
 
-export const tableColumns = [
+export const tableAgencyColumns = [
   {
     key: 'name',
     title: 'Nombre',
