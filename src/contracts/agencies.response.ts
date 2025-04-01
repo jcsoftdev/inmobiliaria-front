@@ -7,8 +7,7 @@ export interface Data {
   id: string
   name: string
   address: string
-  phone: string
-  email: string
+  ruc: string
 }
 
 export interface Meta {

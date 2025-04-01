@@ -17,7 +17,7 @@ export const Agencies = () => {
       <div className="flex justify-between mt-10">
         <h2 className="text-2xl">Agencias</h2>
 
-        <Button color="primary" onPress={handleAddAgency}>
+        <Button color="primary" onPress={handleAddAgency} className="mt-6">
           Agregar
         </Button>
       </div>

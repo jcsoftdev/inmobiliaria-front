@@ -25,17 +25,14 @@ export const FormAgencyFields = ({
               key: 'name',
               title: 'Nombre',
             },
+
             {
               key: 'address',
               title: 'Dirección',
             },
             {
-              key: 'phone',
-              title: 'Teléfono',
-            },
-            {
-              key: 'email',
-              title: 'Email',
+              key: 'ruc',
+              title: 'RUC',
             },
           ] as const
         ).map((field) => {

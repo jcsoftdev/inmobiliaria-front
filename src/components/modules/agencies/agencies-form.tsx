@@ -44,9 +44,8 @@ const AgencyForm = () => {
       if (formType === FormType.ADD) {
         saveAgency({
           name: props.name ?? '',
+          ruc: props.ruc ?? '',
           address: props.address ?? '',
-          phone: props.phone ?? '',
-          email: props.email ?? '',
         })
           .then(() => {
             reset()
@@ -72,8 +71,7 @@ const AgencyForm = () => {
       editAgency(id, {
         name: props.name ?? '',
         address: props.address ?? '',
-        phone: props.phone ?? '',
-        email: props.email ?? '',
+        ruc: props.ruc ?? '',
       })
         .then(() => {
           reset()

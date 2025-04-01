@@ -48,8 +48,7 @@ export const createSetters = (
         formFields: {
           name: '',
           address: '',
-          phone: '',
-          email: '',
+          ruc: '',
         },
       }),
       false,
@@ -65,8 +64,7 @@ export const initialAgenciesState: AgenciesState = {
   formFields: {
     name: '',
     address: '',
-    phone: '',
-    email: '',
+    ruc: '',
   },
 }
 
