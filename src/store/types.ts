@@ -27,8 +27,7 @@ export type AgenciesState = {
   formFields: {
     name?: string
     address?: string
-    phone?: string
-    email?: string
+    ruc?: string
   }
 }
 

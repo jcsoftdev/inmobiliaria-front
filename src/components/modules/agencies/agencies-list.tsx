@@ -1,4 +1,5 @@
 import { Button } from '@heroui/button'
+import { Input } from '@heroui/react'
 import { addToast, Pagination } from '@heroui/react'
 import {
   getKeyValue,
@@ -9,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/table'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import Edit from '@components/icons/edit'
@@ -35,6 +36,8 @@ const AgencyList = () => {
   const { page, setCurrentPage } = usePaginator()
   const navigate = useNavigate()
   const location = useLocation()
+
+  const [searchTerm, setSearchTerm] = useState('')
 
   const { error, isLoading, agencies, refetch, isFetching } = useGetAgencies({
     currentPage: +page,
@@ -75,6 +78,10 @@ const AgencyList = () => {
     })
   }
 
+  const filteredAgencies = agencies?.data.filter((agency) =>
+    agency.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+
   if (isLoading) {
     return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />
   }
@@ -90,13 +97,22 @@ const AgencyList = () => {
 
   return (
     <div className="">
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Buscar Agencia..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full , mt-4"
+        />
+      </div>
       <Table aria-label="Agencias" className="pt-4">
         <TableHeader columns={tableAgencyColumns}>
           {(column) => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={agencies?.data ?? []}>
+        <TableBody items={filteredAgencies ?? []}>
           {(agency) => {
             return (
               <TableRow key={agency.id}>

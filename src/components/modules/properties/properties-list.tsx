@@ -105,13 +105,14 @@ const PropertiesList = () => {
                   }
 
                   if (columnKey === 'type') {
+                    const typeValue = getKeyValue(property, columnKey)
                     return (
                       <TableCell key={columnKey}>
-                        {typeMap[
-                          (
-                            getKeyValue(property, columnKey) as string
-                          ).toLowerCase() as keyof typeof typeMap
-                        ] || getKeyValue(property, columnKey)}
+                        {typeValue
+                          ? typeMap[
+                              typeValue.toLowerCase() as keyof typeof typeMap
+                            ] || typeValue
+                          : 'N/A'}
                       </TableCell>
                     )
                   }
