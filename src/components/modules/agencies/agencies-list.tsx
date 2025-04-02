@@ -15,7 +15,6 @@ import { useLocation, useNavigate } from 'react-router'
 import Edit from '@components/icons/edit'
 import Trash from '@components/icons/trash'
 import { alert } from '@components/ui/alert'
-import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
 import { Data } from '@contracts/agencies.response'
@@ -59,11 +58,10 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
   const { error, isLoading, agencies, refetch, isFetching } =
     useGetAgencies(memoizedProps)
 
-  useEffect(() => {
-    if (agencies) {
-      console.log('agencies updated:', agencies)
-    }
-  }, [agencies])
+  const currentPageAgencies = useMemo(
+    () => agencies?.data || [],
+    [agencies?.data],
+  )
 
   useEffect(() => {
     const handleUpdate = () => refetch()
@@ -84,17 +82,50 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
         ),
         showConfirmButton: true,
         showCancelButton: true,
-        onConfirm: () => {
-          deleteAgency(id).then(() => {
+        onConfirm: async () => {
+          try {
+            await deleteAgency(id)
             addToast({ color: 'warning', title: 'Agencia eliminada' })
-            refetch()
-          })
+
+            if (page > 1 && currentPageAgencies.length <= 1) {
+              const newPage = searchTerm ? page - 1 : 1
+              await new Promise<void>((resolve) => {
+                setCurrentPage(newPage)
+                setTimeout(resolve, 100)
+              })
+            }
+
+            await refetch()
+
+            if (currentPageAgencies.length === 0 && page > 1) {
+              setCurrentPage(page - 1)
+              await refetch()
+            }
+          } catch (error) {
+            console.error('Error al eliminar la agencia:', error)
+            addToast({
+              color: 'danger',
+              title: 'Error al eliminar la agencia',
+              description: 'Por favor intente nuevamente',
+            })
+          }
         },
         onCancel: () => {},
       })
     },
-    [refetch],
+    [refetch, page, currentPageAgencies.length, setCurrentPage, searchTerm],
   )
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !isFetching &&
+      currentPageAgencies.length === 0 &&
+      page > 1
+    ) {
+      setCurrentPage(page - 1)
+    }
+  }, [currentPageAgencies.length, page, isLoading, isFetching, setCurrentPage])
 
   const handleEdit = useMemo(
     () => (agency: Data) => {
@@ -115,12 +146,12 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
     [setEditingAgency, getPath, page, location, navigate],
   )
 
-  const currentPageAgencies = useMemo(
-    () => agencies?.data || [],
-    [agencies?.data],
-  )
+  const showEmptyMessage = currentPageAgencies.length === 0
+  const isFiltering = Boolean(searchTerm)
+  const hasAgencies = (agencies?.meta?.total ?? 0) > 0
+  const showSkeleton = isLoading && !agencies
 
-  if (isLoading) {
+  if (showSkeleton) {
     return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />
   }
 
@@ -130,53 +161,55 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
 
   return (
     <div>
-      {searchTerm && currentPageAgencies.length === 0 ? (
+      {showEmptyMessage && isFiltering ? (
         <p>No se encontraron agencias para la búsqueda.</p>
-      ) : currentPageAgencies.length === 0 ? (
-        <p>Por favor ingresa un término de búsqueda.</p>
+      ) : !hasAgencies ? (
+        <p className="text-center py-4">No hay agencias registradas.</p>
       ) : (
-        <Table aria-label="Agencias" className="pt-4">
-          <TableHeader columns={tableAgencyColumns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.title}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={currentPageAgencies}>
-            {(agency) => (
-              <TableRow key={agency.id}>
-                {(columnKey) => (
-                  <TableCell key={columnKey}>
-                    {columnKey === 'actions' ? (
-                      <div className="flex gap-4">
-                        <Button
-                          color="warning"
-                          isIconOnly
-                          className="text-white"
-                          onPress={() => handleEdit(agency)}
-                        >
-                          <Edit />
-                        </Button>
-                        <Button
-                          color="danger"
-                          isIconOnly
-                          className="text-white"
-                          onPress={() => handleDelete(agency.id, agency.name)}
-                        >
-                          <Trash />
-                        </Button>
-                      </div>
-                    ) : (
-                      getKeyValue(agency, columnKey)
-                    )}
-                  </TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <>
+          <Table aria-label="Agencias" className="pt-4">
+            <TableHeader columns={tableAgencyColumns}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.title}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={currentPageAgencies}>
+              {(agency) => (
+                <TableRow key={agency.id}>
+                  {(columnKey) => (
+                    <TableCell key={columnKey}>
+                      {columnKey === 'actions' ? (
+                        <div className="flex gap-4">
+                          <Button
+                            color="warning"
+                            isIconOnly
+                            className="text-white"
+                            onPress={() => handleEdit(agency)}
+                          >
+                            <Edit />
+                          </Button>
+                          <Button
+                            color="danger"
+                            isIconOnly
+                            className="text-white"
+                            onPress={() => handleDelete(agency.id, agency.name)}
+                          >
+                            <Trash />
+                          </Button>
+                        </div>
+                      ) : (
+                        getKeyValue(agency, columnKey)
+                      )}
+                    </TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </>
       )}
 
-      {!isLoading && !isFetching && currentPageAgencies.length > 0 ? (
+      {hasAgencies && currentPageAgencies.length > 0 && (
         <div className="py-4">
           <Pagination
             color="primary"
@@ -185,14 +218,7 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
             onChange={setCurrentPage}
           />
         </div>
-      ) : null}
-
-      {!isLoading &&
-      !isFetching &&
-      currentPageAgencies.length === 0 &&
-      !searchTerm ? (
-        <SkeletonPagination total={+(agencies?.meta?.lastPage ?? 0)} />
-      ) : null}
+      )}
     </div>
   )
 })
