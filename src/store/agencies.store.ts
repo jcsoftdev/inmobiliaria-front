@@ -11,6 +11,12 @@ export const createSetters = (
   setAgencies: (data: Partial<AgenciesState>) =>
     set(
       (prev) => {
+        if (data.data) {
+          return {
+            ...prev,
+            ...data,
+          }
+        }
         return {
           ...prev,
           ...data,

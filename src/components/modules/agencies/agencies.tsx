@@ -21,13 +21,15 @@ export const Agencies = () => {
   const lastPage = useRef(page)
 
   const handleSearch = (value: string) => {
-    if (!searchTerm && value) {
-      lastPage.current = page
-      setCurrentPage(1)
-    } else if (searchTerm && !value) {
-      setCurrentPage(lastPage.current)
-    } else if (value !== searchTerm && value) {
-      setCurrentPage(1)
+    if (value !== searchTerm) {
+      if (!value) {
+        setCurrentPage(1)
+      } else if (!searchTerm) {
+        lastPage.current = page
+        setCurrentPage(1)
+      } else if (value) {
+        setCurrentPage(1)
+      }
     }
 
     setSearchTerm(value)
