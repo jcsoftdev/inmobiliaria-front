@@ -268,14 +268,20 @@ export const Router = () => {
           <Route
             path={routes.agencies.home.path}
             element={
-              <RouteGuard
-                allowedRoles={routes.agencies.home.roles}
-                validation={routes.agencies.home.validation}
+              <CachedSuspense
+                fallback={<FallbackLoader />}
+                componentKey={'agencies'}
               >
-                <AgenciesModule />
-              </RouteGuard>
+                <RouteGuard
+                  allowedRoles={routes.agencies.home.roles}
+                  validation={routes.agencies.home.validation}
+                >
+                  <AgenciesModule />
+                </RouteGuard>
+              </CachedSuspense>
             }
           >
+            <Route index element={null} />
             <Route
               path="register"
               element={

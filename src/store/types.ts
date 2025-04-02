@@ -24,6 +24,7 @@ export type AgenciesState = {
   meta?: AgenciesResponse['meta']
   isLoading?: boolean
   isError?: boolean
+  currentPage?: number
   formFields: {
     name?: string
     address?: string

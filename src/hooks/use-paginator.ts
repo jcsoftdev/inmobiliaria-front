@@ -5,7 +5,9 @@ export const usePaginator = () => {
   const page = searchParams.get('page') ?? '1'
 
   const setCurrentPage = (page: number) => {
-    setSearchParams({ page: page.toString() })
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('page', page.toString())
+    setSearchParams(newParams)
   }
 
   return {

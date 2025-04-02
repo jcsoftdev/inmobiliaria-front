@@ -39,11 +39,11 @@ const FormModal = <T extends FieldValues>({
   const navigate = useBackNavigate()
 
   const handleClose = useCallback(() => {
-    onOpenChange()
     onCloseProp?.()
+    onOpenChange()
     setTimeout(() => {
       navigate(redirectTo ?? routes.dashboard.path)
-    }, 300)
+    }, 100)
   }, [navigate, onCloseProp, onOpenChange, redirectTo])
 
   const memoizedProps = useMemo(
