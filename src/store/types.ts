@@ -24,11 +24,11 @@ export type AgenciesState = {
   meta?: AgenciesResponse['meta']
   isLoading?: boolean
   isError?: boolean
+  currentPage?: number
   formFields: {
     name?: string
     address?: string
-    phone?: string
-    email?: string
+    ruc?: string
   }
 }
 

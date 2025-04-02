@@ -4,6 +4,7 @@ import { devtools } from 'zustand/middleware'
 import { AgenciesState } from '@store/types'
 
 type AgencyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
+
 export const createSetters = (
   set: Parameters<AgencyStateCreator<AgenciesState>>[0],
 ) => ({
@@ -41,6 +42,15 @@ export const createSetters = (
       }`,
     )
   },
+  setEditingAgency: (agency: AgenciesState['formFields']) =>
+    set(
+      (prev) => ({
+        ...prev,
+        formFields: agency,
+      }),
+      false,
+      'agencies/setEditingAgency',
+    ),
   emptyFormFields: () =>
     set(
       (prev) => ({
@@ -48,8 +58,7 @@ export const createSetters = (
         formFields: {
           name: '',
           address: '',
-          phone: '',
-          email: '',
+          ruc: '',
         },
       }),
       false,
@@ -65,14 +74,11 @@ export const initialAgenciesState: AgenciesState = {
   formFields: {
     name: '',
     address: '',
-    phone: '',
-    email: '',
+    ruc: '',
   },
 }
 
-type Setters = ReturnType<typeof createSetters>
-
-type AgenciesStore = AgenciesState & Setters
+export type AgenciesStore = AgenciesState & ReturnType<typeof createSetters>
 
 export const createAgencySlice: AgencyStateCreator<AgenciesStore> = (set) => ({
   ...initialAgenciesState,

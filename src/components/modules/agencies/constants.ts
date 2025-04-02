@@ -10,12 +10,8 @@ export const tableAgencyColumns = [
     title: 'Dirección',
   },
   {
-    key: 'phone',
-    title: 'Teléfono',
-  },
-  {
-    key: 'email',
-    title: 'Email',
+    key: 'ruc',
+    title: 'RUC',
   },
   {
     key: 'actions',

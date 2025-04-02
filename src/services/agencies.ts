@@ -8,13 +8,19 @@ import { httpRequest } from '@http/http-request'
 export const getAgencies = async ({
   page,
   perPage,
+  q,
 }: {
   page?: number
   perPage?: number
+  q?: string
 }) => {
-  const response = await httpRequest.get<AgenciesResponse>(
-    envVariables.API_URL_AGENCIES + `?page=${page}&perPage=${perPage}`,
-  )
+  let url = `${envVariables.API_URL_AGENCIES}?page=${page}&perPage=${perPage}`
+
+  if (q) {
+    url += `&search=${encodeURIComponent(q)}`
+  }
+
+  const response = await httpRequest.get<AgenciesResponse>(url)
   return response
 }
 

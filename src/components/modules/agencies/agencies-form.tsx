@@ -8,6 +8,7 @@ import { FormModal } from '@components/ui/form-modal'
 
 import { editAgency, saveAgency } from '@services/agencies'
 
+import { useNavigationPath } from '@utils/navigation'
 import { eventBus } from '@utils/publisher'
 
 import { useAgenciesStore } from '@store/agencies.store'
@@ -22,11 +23,11 @@ const AgencyForm = () => {
   const {
     data: agencies,
     formFields,
-
     setFormFields,
     emptyFormFields,
   } = useAgenciesStore()
   const { id = '' } = useParams()
+  const { preserveParams } = useNavigationPath()
   const formType = id ? FormType.EDIT : FormType.ADD
 
   const form = useForm<Inputs>({
@@ -44,9 +45,8 @@ const AgencyForm = () => {
       if (formType === FormType.ADD) {
         saveAgency({
           name: props.name ?? '',
+          ruc: props.ruc ?? '',
           address: props.address ?? '',
-          phone: props.phone ?? '',
-          email: props.email ?? '',
         })
           .then(() => {
             reset()
@@ -72,8 +72,7 @@ const AgencyForm = () => {
       editAgency(id, {
         name: props.name ?? '',
         address: props.address ?? '',
-        phone: props.phone ?? '',
-        email: props.email ?? '',
+        ruc: props.ruc ?? '',
       })
         .then(() => {
           reset()
@@ -119,10 +118,12 @@ const AgencyForm = () => {
     <FormModal
       form={form}
       onSubmit={onSubmit}
-      redirectTo={routes.agencies.home.path}
+      redirectTo={preserveParams(routes.agencies.home.path)}
       onClose={emptyFormFields}
     >
-      <FormModal.Header>Agregar Agencia</FormModal.Header>
+      <FormModal.Header>
+        {formType === FormType.ADD ? 'Agregar Agencia' : 'Editar Agencia'}
+      </FormModal.Header>
       <FormModal.Body>
         <FormAgencyFields
           register={register}

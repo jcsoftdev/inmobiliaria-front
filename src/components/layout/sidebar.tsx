@@ -21,7 +21,6 @@ interface SidebarProps {
 const ROUTES = [
   { label: 'Dashboard', route: routes.dashboard },
   { label: 'Usuarios', route: routes.users.home },
-  { label: 'Agencias', route: routes.agencies.home },
   { label: 'Propiedades', route: routes.properties.home },
   { label: 'Clientes', route: routes.clients.home },
 ]
@@ -33,6 +32,15 @@ const ACCORDION_ROUTES = [
     subRoutes: [
       { label: 'Listado', path: routes.companies.home.path },
       { label: 'Registrar', path: routes.companies.register.path },
+    ],
+  },
+  {
+    label: 'Agencias',
+    route: routes.agencies.home,
+    subRoutes: [
+      { label: 'Listado', path: routes.agencies.home.path },
+      { label: 'Asignar Usuario', path: '#' },
+      { label: 'Asignar Agencia', path: '#' },
     ],
   },
 ]
@@ -95,10 +103,12 @@ const Sidebar = ({ className, ...props }: SidebarProps) => {
 
   return (
     <nav
-      className={twMerge(className, 'p-4 px-6 flex flex-col gap-16')}
+      className={twMerge(className, 'p-4 px-6 flex flex-col gap-8')}
       style={props.style}
     >
-      <img src={img} alt="logo" />
+      <div className="flex justify-center py-2">
+        <img src={img} alt="logo" className="h-auto" />
+      </div>
       <ul className="flex flex-col gap-4">
         {visibleRoutes.map(({ label, route }) => (
           <li key={typeof route.path === 'string' ? route.path : ''}>
