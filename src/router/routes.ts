@@ -30,7 +30,7 @@ export const routes: {
     edit: { path: '/properties/edit/:id', roles: ['admin', 'seller'] },
   },
   agencies: {
-    home: { path: '/agencies', roles: ['admin'], validation: 'hasCompanies' },
+    home: { path: '/agencies', roles: ['admin'] },
     register: { path: '/agencies/register', roles: ['admin'] },
     edit: { path: '/agencies/edit/:id', roles: ['admin'] },
   },
