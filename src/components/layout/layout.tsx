@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo, Suspense } from 'react'
+import { FunctionComponent, useMemo } from 'react'
 import { Outlet } from 'react-router'
 
 interface LayoutProps {
@@ -63,18 +63,8 @@ const Layout = ({
         className="bg-gray-100 text-center p-4 md:px-10 overflow-scroll"
         style={{ gridArea: 'main' }}
       >
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-sky-700"></div>
-            </div>
-          }
-        >
-          <div className="max-w-[70vw] mx-auto">
-            {children}
-            <Outlet />
-          </div>
-        </Suspense>
+        <div className="max-w-[70vw] mx-auto">{children}</div>
+        <Outlet />
       </div>
       <Footer {...footerProps} />
     </div>

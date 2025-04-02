@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Route, Routes, Navigate, Outlet } from 'react-router'
 
+import { CachedSuspense, FallbackLoader } from '@components/cached-suspense'
 import { Footer, Header, Layout, Sidebar } from '@components/layout'
 import {
   authStorageKeys,
@@ -228,18 +229,23 @@ export const Router = () => {
           />
 
           {/* Properties routes */}
-          <Route path={routes.properties.home.path}>
-            <Route
-              index
-              element={
+          <Route
+            path={routes.properties.home.path}
+            element={
+              <CachedSuspense
+                fallback={<FallbackLoader />}
+                componentKey={'properties'}
+              >
                 <RouteGuard
                   allowedRoles={routes.properties.home.roles}
                   validation={routes.properties.home.validation}
                 >
                   <PropertiesModule />
                 </RouteGuard>
-              }
-            />
+              </CachedSuspense>
+            }
+          >
+            <Route index element={null} />
             <Route
               path="register"
               element={
@@ -259,18 +265,17 @@ export const Router = () => {
           </Route>
 
           {/* Agencies routes */}
-          <Route path={routes.agencies.home.path}>
-            <Route
-              index
-              element={
-                <RouteGuard
-                  allowedRoles={routes.agencies.home.roles}
-                  validation={routes.agencies.home.validation}
-                >
-                  <AgenciesModule />
-                </RouteGuard>
-              }
-            />
+          <Route
+            path={routes.agencies.home.path}
+            element={
+              <RouteGuard
+                allowedRoles={routes.agencies.home.roles}
+                validation={routes.agencies.home.validation}
+              >
+                <AgenciesModule />
+              </RouteGuard>
+            }
+          >
             <Route
               path="register"
               element={
@@ -321,18 +326,17 @@ export const Router = () => {
           </Route>
 
           {/* Users routes */}
-          <Route path={routes.users.home.path}>
-            <Route
-              index
-              element={
-                <RouteGuard
-                  allowedRoles={routes.users.home.roles}
-                  validation={routes.users.home.validation}
-                >
-                  <UsersModule />
-                </RouteGuard>
-              }
-            />
+          <Route
+            path={routes.users.home.path}
+            element={
+              <RouteGuard
+                allowedRoles={routes.users.home.roles}
+                validation={routes.users.home.validation}
+              >
+                <UsersModule />
+              </RouteGuard>
+            }
+          >
             <Route
               path="register"
               element={
