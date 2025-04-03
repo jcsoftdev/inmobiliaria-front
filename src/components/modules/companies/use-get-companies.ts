@@ -28,7 +28,6 @@ export const useGetCompanies = ({
   const setLastSearch = useCompaniesStore((state) => state.setLastSearch)
   const meta = useCompaniesStore((state) => state.meta)
   const perPage = 8
-
   const {
     data,
     error,

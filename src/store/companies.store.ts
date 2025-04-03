@@ -8,12 +8,12 @@ type CompanyStateCreator<T> = StateCreator<T, [['zustand/devtools', never]], []>
 export const createSetters = (
   set: Parameters<CompanyStateCreator<CompaniesState>>[0],
 ) => ({
-  setCompanies: (data: Partial<CompaniesState>) =>
+  setCompanies: (newState: Partial<CompaniesState>) =>
     set(
       (prev) => {
         return {
           ...prev,
-          ...data,
+          ...newState,
         }
       },
       false,
@@ -93,6 +93,17 @@ export const createSetters = (
       false,
       'company/setLastSearch',
     ),
+  deleteFromCompanies: (id: string) => {
+    set(
+      (prev) => ({
+        ...prev,
+        data: prev.data?.filter((company) => company.id !== id),
+      }),
+      false,
+      'company/deleteFromCompanies',
+    )
+    return useCompaniesStore.getState().data
+  },
 })
 
 export const initialCompaniesState: CompaniesState = {

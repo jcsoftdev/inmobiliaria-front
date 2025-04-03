@@ -25,6 +25,7 @@ const EmptyState = ({ title, description, action, icon }: EmptyStateProps) => {
             </Button>
           </div>
         )}
+        <img src="/empty-state.svg" alt="Empty State" className="mb-4 w-96" />
       </div>
     </div>
   )

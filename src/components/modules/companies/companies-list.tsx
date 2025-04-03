@@ -19,8 +19,6 @@ import EmptyState from '@components/ui/empty-state'
 import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
-import { Data } from '@contracts/companies.response'
-
 import { deleteCompany } from '@services/companies'
 
 import { eventBus } from '@utils/publisher'
@@ -44,18 +42,14 @@ const CompanyList = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const search = useCompaniesStore((state) => state.search)
-  const {
-    error,
-    isLoading,
-    companies,
-    meta,
-    refetch,
-    isFetching,
-    setCompanies,
-  } = useGetCompanies({
-    currentPage: +page,
-    enabled: true,
-  })
+  const deleteFromCompanies = useCompaniesStore(
+    (state) => state.deleteFromCompanies,
+  )
+  const { error, isLoading, meta, refetch, isFetching, companies } =
+    useGetCompanies({
+      currentPage: +page,
+      enabled: true,
+    })
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -67,9 +61,6 @@ const CompanyList = () => {
   }, [refetch])
 
   const handleDelete = (id: string, extraInfo?: string) => {
-    const filterCompany =
-      companies?.filter((company) => company.id !== id) ?? ([] as Data[])
-
     alert.fire({
       title: 'Eliminar Empresa',
       message: (
@@ -82,19 +73,26 @@ const CompanyList = () => {
       showConfirmButton: true,
       showCancelButton: true,
       onConfirm: () => {
-        deleteCompany(id).then(() => {
-          if (!filterCompany.length) {
-            setCurrentPage(Math.max(1, +page - 1))
-          }
-          addToast({
-            color: 'warning',
-            title: 'Empresa eliminada',
+        const actual = deleteFromCompanies(id)
+        if (!actual?.length) {
+          setCurrentPage(Math.max(1, +page - 1))
+        }
+        deleteCompany(id)
+          .then(() => {
+            addToast({
+              color: 'success',
+              title: 'Empresa eliminada',
+            })
+            refetch()
           })
-          setCompanies({
-            data: filterCompany,
+          .catch((error) => {
+            addToast({
+              color: 'danger',
+              title: 'No se pudo eliminar la empresa',
+              description:
+                error.message ?? 'Hubo un error al eliminar la empresa',
+            })
           })
-          refetch()
-        })
       },
       onCancel: () => {},
     })
