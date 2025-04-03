@@ -1,8 +1,9 @@
 import { Modal, ModalContent, useDisclosure } from '@heroui/react'
-import { createContext, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { FieldValues, UseFormReturn } from 'react-hook-form'
 
 import { Body } from '@components/ui/form-modal/form-modal-body'
+import { FormModalContext } from '@components/ui/form-modal/form-modal-context'
 import { Footer } from '@components/ui/form-modal/form-modal-footer'
 import { Header } from '@components/ui/form-modal/form-modal-header'
 
@@ -18,16 +19,6 @@ interface FormModalProps<T extends FieldValues> {
   onClose?: () => void
 }
 
-const FormModalContext = createContext<{
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-  handleClose: () => void
-}>({
-  isOpen: false,
-  onOpenChange: () => {},
-  handleClose: () => {},
-})
-
 const FormModal = <T extends FieldValues>({
   children,
   onSubmit,
@@ -37,7 +28,6 @@ const FormModal = <T extends FieldValues>({
 }: FormModalProps<T>) => {
   const { isOpen, onOpenChange } = useDisclosure({ defaultOpen: true })
   const navigate = useBackNavigate()
-
   const handleClose = useCallback(() => {
     onCloseProp?.()
     onOpenChange()
@@ -46,13 +36,13 @@ const FormModal = <T extends FieldValues>({
     }, 100)
   }, [navigate, onCloseProp, onOpenChange, redirectTo])
 
-  const memoizedProps = useMemo(
+  const contextValue = useMemo(
     () => ({ isOpen, onOpenChange, handleClose }),
     [handleClose, isOpen, onOpenChange],
   )
 
   return (
-    <FormModalContext.Provider value={memoizedProps}>
+    <FormModalContext.Provider value={contextValue}>
       <Modal
         isDismissable={false}
         isKeyboardDismissDisabled={true}

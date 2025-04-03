@@ -8,12 +8,21 @@ import { httpRequest } from '@http/http-request'
 export const getCompanies = async ({
   page,
   perPage,
+  search = '',
 }: {
   page: number
   perPage: number
+  search?: string
 }) => {
+  const searchParams = new URLSearchParams()
+  searchParams.set('page', page.toString())
+  searchParams.set('perPage', perPage.toString())
+  if (search) {
+    searchParams.set('search', search)
+  }
+
   const response = await httpRequest.get<CompaniesResponse>(
-    envVariables.API_URL_COMPANIES + `?page=${page}&perPage=${perPage}`,
+    envVariables.API_URL_COMPANIES + `?${searchParams.toString()}`,
   )
   return response
 }

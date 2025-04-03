@@ -75,12 +75,32 @@ export const createSetters = (
       false,
       'company/setIsError',
     ),
+  setSearch: (search: string) =>
+    set(
+      (prev) => ({
+        ...prev,
+        search,
+      }),
+      false,
+      'company/setSearch',
+    ),
+  setLastSearch: (lastSearch: string) =>
+    set(
+      (prev) => ({
+        ...prev,
+        lastSearch,
+      }),
+      false,
+      'company/setLastSearch',
+    ),
 })
 
 export const initialCompaniesState: CompaniesState = {
   isLoading: false,
   isError: false,
   meta: undefined,
+  search: '',
+  lastSearch: '',
   data: [],
   formFields: {
     name: '',

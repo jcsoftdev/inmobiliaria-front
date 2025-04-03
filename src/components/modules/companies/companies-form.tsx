@@ -22,7 +22,6 @@ const CompaniesForm = () => {
   const {
     data: companies,
     formFields,
-
     setFormFields,
     emptyFormFields,
   } = useCompaniesStore()
@@ -106,6 +105,10 @@ const CompaniesForm = () => {
     [setFormFields, setValue],
   )
 
+  const onClose = useCallback(() => {
+    emptyFormFields()
+  }, [emptyFormFields])
+
   useEffect(() => {
     if (!id) return
 
@@ -121,7 +124,7 @@ const CompaniesForm = () => {
       form={form}
       onSubmit={onSubmit}
       redirectTo={routes.companies.home.path}
-      onClose={emptyFormFields}
+      onClose={onClose}
     >
       <FormModal.Header>Agregar Empresa</FormModal.Header>
       <FormModal.Body>
@@ -133,9 +136,10 @@ const CompaniesForm = () => {
         />
       </FormModal.Body>
       <FormModal.Footer>
-        {({ onClose }) => (
-          <FormCompaniesFooter onClose={onClose} type={formType} />
-        )}
+        {({ onClose }) => {
+          console.log({ onClose })
+          return <FormCompaniesFooter onClose={onClose} type={formType} />
+        }}
       </FormModal.Footer>
     </FormModal>
   )

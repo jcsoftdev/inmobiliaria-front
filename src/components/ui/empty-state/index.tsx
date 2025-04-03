@@ -12,7 +12,6 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({ title, description, action, icon }: EmptyStateProps) => {
-  console.log({ title, description, action, icon })
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <div className="text-center">
