@@ -25,23 +25,31 @@ export const routes: {
     validation: 'hasCompanies',
   },
   properties: {
-    home: { path: '/properties', roles: ['admin', 'seller'] },
+    home: {
+      path: '/properties',
+      roles: ['admin', 'seller'],
+      validation: 'hasCompanies',
+    },
     register: { path: '/properties/register', roles: ['admin', 'seller'] },
     edit: { path: '/properties/edit/:id', roles: ['admin', 'seller'] },
   },
   agencies: {
-    home: { path: '/agencies', roles: ['admin'] },
+    home: { path: '/agencies', roles: ['admin'], validation: 'hasCompanies' },
     register: { path: '/agencies/register', roles: ['admin'] },
     edit: { path: '/agencies/edit/:id', roles: ['admin'] },
   },
   login: { path: '/login', roles: [] },
   clients: {
-    home: { path: '/clients', roles: ['admin', 'seller'] },
+    home: {
+      path: '/clients',
+      roles: ['admin', 'seller'],
+      validation: 'hasCompanies',
+    },
     register: { path: '/clients/register', roles: ['admin', 'seller'] },
     edit: { path: '/clients/edit/:id', roles: ['admin', 'seller'] },
   },
   users: {
-    home: { path: '/users', roles: ['admin'] },
+    home: { path: '/users', roles: ['admin'], validation: 'hasCompanies' },
     register: { path: '/users/register', roles: ['admin'] },
     edit: { path: '/users/edit/:id', roles: ['admin'] },
   },
@@ -56,6 +64,7 @@ export const getDynamicRoute = (
   route: string,
   params: Record<string, string | number>,
 ) => {
+  console.log({ route, params })
   let newRoute = route
   Object.entries(params).forEach(([key, value]) => {
     newRoute = newRoute.replace(`:${key}`, value.toString())

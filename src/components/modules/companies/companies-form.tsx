@@ -6,6 +6,7 @@ import { useParams } from 'react-router'
 import { COMPANY_REGISTERED_REFETCH_KEY } from '@components/modules/companies/constants'
 import { FormModal } from '@components/ui/form-modal'
 
+import { refreshToken } from '@services/auth'
 import { editCompany, saveCompany } from '@services/companies'
 
 import { eventBus } from '@utils/publisher'
@@ -21,6 +22,7 @@ import { FormType, Inputs } from './types'
 const CompaniesForm = () => {
   const {
     data: companies,
+    meta,
     formFields,
     setFormFields,
     emptyFormFields,
@@ -55,7 +57,10 @@ const CompaniesForm = () => {
               color: 'success',
               title: 'Empresa guardada',
             })
-            eventBus.emit(COMPANY_REGISTERED_REFETCH_KEY)
+            if (companies?.length === 0 && meta?.lastPage === 1) {
+              refreshToken()
+            }
+            eventBus.emit(COMPANY_REGISTERED_REFETCH_KEY, 'hasCompanies')
           })
           .catch((error) => {
             addToast({
@@ -94,7 +99,7 @@ const CompaniesForm = () => {
           console.error(error)
         })
     },
-    [emptyFormFields, formType, id, reset],
+    [companies?.length, emptyFormFields, formType, id, meta?.lastPage, reset],
   )
 
   const handleChange = useCallback(

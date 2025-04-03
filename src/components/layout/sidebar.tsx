@@ -1,10 +1,12 @@
 import { Accordion, AccordionItem } from '@heroui/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { NavLink } from 'react-router'
 import { twMerge } from 'tailwind-merge'
 
+import { COMPANY_VALIDATION_KEY } from '@components/modules/companies/constants'
 import { UserStore } from '@components/modules/login/utils'
 
+import { eventBus } from '@utils/publisher'
 import { validations } from '@utils/validations'
 
 import { routes } from '@router/routes'
@@ -23,17 +25,10 @@ const ROUTES = [
   { label: 'Usuarios', route: routes.users.home },
   { label: 'Propiedades', route: routes.properties.home },
   { label: 'Clientes', route: routes.clients.home },
+  { label: 'Empresas', route: routes.companies.home },
 ]
 
 const ACCORDION_ROUTES = [
-  {
-    label: 'Empresas',
-    route: routes.companies.home,
-    subRoutes: [
-      { label: 'Listado', path: routes.companies.home.path },
-      { label: 'Registrar', path: routes.companies.register.path },
-    ],
-  },
   {
     label: 'Agencias',
     route: routes.agencies.home,
@@ -57,42 +52,51 @@ const useFilteredRoutes = (userRole: UserStore | null) => {
     }[]
   >([])
 
+  const filterRoutes = useCallback(async (userRole: UserStore) => {
+    const filteredRoutes = await Promise.all(
+      ROUTES.map(async ({ label, route }) => {
+        const hasRole = route.roles.includes(userRole.roles[0])
+        const isValid = route.validation
+          ? await validations[route.validation]()
+          : true
+        return hasRole && isValid ? { label, route } : null
+      }),
+    )
+    setVisibleRoutes(filteredRoutes.filter(Boolean) as typeof visibleRoutes)
+  }, [])
+
+  const filterAccordionRoutes = useCallback(async (userRole: UserStore) => {
+    const filteredAccordionRoutes = await Promise.all(
+      ACCORDION_ROUTES.map(async ({ label, route, subRoutes }) => {
+        const hasRole = route.roles.includes(userRole.roles[0])
+        const isValid = route.validation
+          ? await validations[route.validation]()
+          : true
+        return hasRole && isValid ? { label, route, subRoutes } : null
+      }),
+    )
+    setVisibleAccordionRoutes(
+      filteredAccordionRoutes.filter(Boolean) as typeof visibleAccordionRoutes,
+    )
+  }, [])
+
+  const filter = useCallback(
+    async (userRole: UserStore | null) => {
+      if (!userRole) return
+      filterRoutes(userRole)
+      filterAccordionRoutes(userRole)
+    },
+    [filterAccordionRoutes, filterRoutes],
+  )
+
   useEffect(() => {
-    if (!userRole) return
+    filter(userRole)
+  }, [userRole, filter])
 
-    const filterRoutes = async () => {
-      const filteredRoutes = await Promise.all(
-        ROUTES.map(async ({ label, route }) => {
-          const hasRole = route.roles.includes(userRole.roles[0])
-          const isValid = route.validation
-            ? await validations[route.validation]()
-            : true
-          return hasRole && isValid ? { label, route } : null
-        }),
-      )
-      setVisibleRoutes(filteredRoutes.filter(Boolean) as typeof visibleRoutes)
-    }
-
-    const filterAccordionRoutes = async () => {
-      const filteredAccordionRoutes = await Promise.all(
-        ACCORDION_ROUTES.map(async ({ label, route, subRoutes }) => {
-          const hasRole = route.roles.includes(userRole.roles[0])
-          const isValid = route.validation
-            ? await validations[route.validation]()
-            : true
-          return hasRole && isValid ? { label, route, subRoutes } : null
-        }),
-      )
-      setVisibleAccordionRoutes(
-        filteredAccordionRoutes.filter(
-          Boolean,
-        ) as typeof visibleAccordionRoutes,
-      )
-    }
-
-    filterRoutes()
-    filterAccordionRoutes()
-  }, [userRole])
+  useEffect(() => {
+    eventBus.on(COMPANY_VALIDATION_KEY, () => filter(userRole))
+    return () => eventBus.off(COMPANY_VALIDATION_KEY, () => filter(userRole))
+  }, [userRole, filter])
 
   return { visibleRoutes, visibleAccordionRoutes }
 }

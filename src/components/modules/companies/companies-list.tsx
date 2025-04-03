@@ -33,6 +33,7 @@ import { tableColumns } from '../properties/constants'
 
 import {
   COMPANY_REGISTERED_REFETCH_KEY,
+  COMPANY_VALIDATION_KEY,
   tableCompanyColumns,
 } from './constants'
 import { useGetCompanies } from './use-get-companies'
@@ -81,6 +82,15 @@ const CompanyList = () => {
               color: 'success',
               title: 'Empresa eliminada',
             })
+            console.log({
+              actual,
+              page,
+            })
+            if (actual?.length === 0 && (meta?.lastPage ?? 0) === 1) {
+              eventBus.emit(COMPANY_VALIDATION_KEY, 'hasCompanies')
+              return
+            }
+
             if (!actual?.length && +page > 1) {
               setCurrentPage(Math.max(1, +page - 1))
               return

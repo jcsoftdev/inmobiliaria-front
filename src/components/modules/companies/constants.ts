@@ -1,5 +1,7 @@
 export const COMPANY_REGISTERED_REFETCH_KEY: symbol = Symbol()
 
+export const COMPANY_VALIDATION_KEY = Symbol()
+
 export const tableCompanyColumns = [
   {
     key: 'name',

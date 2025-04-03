@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Route, Routes, Navigate, Outlet } from 'react-router'
 
 import { CachedSuspense, FallbackLoader } from '@components/cached-suspense'
@@ -116,21 +116,19 @@ const RouteGuard = ({
 
   const [isAsyncValid, setIsAsyncValid] = useState<boolean | null>(null)
 
-  useEffect(() => {
-    let isMounted = true
-
+  const checkValidation = useCallback((validation?: ValidationsKeys) => {
     if (validation) {
       const validationFn = validations[validation]
       const isValid = validationFn()
-
+      console.log({ isValid })
       if (isValid instanceof Promise) {
         setIsAsyncValid(null)
         isValid
           .then((result) => {
-            if (isMounted) setIsAsyncValid(!!result)
+            setIsAsyncValid(!!result)
           })
           .catch(() => {
-            if (isMounted) setIsAsyncValid(false)
+            setIsAsyncValid(false)
           })
       } else {
         setIsAsyncValid(isValid)
@@ -138,11 +136,17 @@ const RouteGuard = ({
     } else {
       setIsAsyncValid(true)
     }
+  }, [])
 
-    return () => {
-      isMounted = false
-    }
-  }, [validation])
+  useEffect(() => {
+    checkValidation(validation)
+  }, [checkValidation, validation])
+
+  // useEffect(() => {
+  //   eventBus.on(COMPANY_VALIDATION_KEY, checkValidation as () => void)
+  //   return () =>
+  //     eventBus.off(COMPANY_VALIDATION_KEY, checkValidation as () => void)
+  // }, [checkValidation])
 
   if (error) {
     removeLocalStorage(authStorageKeys.accessToken)
@@ -166,7 +170,7 @@ const RouteGuard = ({
 
   if (!allowedRoles.includes(user.roles[0])) {
     console.log('Access denied. Insufficient permissions.')
-    return <Navigate to={routes.dashboard.path} replace />
+    return <Navigate to={routes.companies.home.path} replace />
   }
 
   if (isAsyncValid === null) {
@@ -179,7 +183,8 @@ const RouteGuard = ({
 
   if (!isAsyncValid) {
     console.log('Access denied. Validation failed.')
-    return <Navigate to={routes.dashboard.path} replace />
+    // TODO this is not working when you remove the last company, it should validate well just with the actual path
+    return <Navigate to={routes.companies.home.path} replace />
   }
 
   return children
@@ -209,7 +214,9 @@ export const Router = () => {
         <Route element={<AuthWrapper />}>
           <Route
             index
-            element={<Navigate to={routes.dashboard.path} relative="path" />}
+            element={
+              <Navigate to={routes.companies.home.path} relative="path" />
+            }
           />
 
           <Route

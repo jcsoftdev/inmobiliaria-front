@@ -1,4 +1,4 @@
-type EventCallback = <T = unknown>(...args: T[]) => void
+type EventCallback<T = unknown> = (arg?: T) => void
 
 type EventType = string | symbol
 
@@ -15,9 +15,9 @@ const createEventBus = () => {
     events[event] = events[event].filter((cb) => cb !== callback)
   }
 
-  const emit = <T = unknown>(event: EventType, ...args: T[]) => {
+  const emit = <T = unknown>(event: EventType, args?: T) => {
     if (!events[event]) return
-    events[event].forEach((callback) => callback(...args))
+    events[event].forEach((callback) => callback(args))
   }
 
   return {
