@@ -47,7 +47,15 @@ const AgencyForm = () => {
     formState: { errors, isSubmitting },
   } = form
 
-  const handleClose = useCallback(() => {
+  const handleChange = useCallback(
+    (key: keyof Inputs, value: string) => {
+      setFormFields((prev) => ({ ...prev, [key]: value }))
+      setValue(key, value)
+    },
+    [setFormFields, setValue],
+  )
+
+  const onClose = useCallback(() => {
     emptyFormFields()
     reset({
       name: '',
@@ -57,7 +65,7 @@ const AgencyForm = () => {
     navigate(routes.agencies.home.path + `?page=${currentPage}`, {
       replace: true,
     })
-  }, [emptyFormFields, reset, navigate, currentPage])
+  }, [currentPage, emptyFormFields, navigate, reset])
 
   useEffect(() => {
     if (!id) {
@@ -87,13 +95,7 @@ const AgencyForm = () => {
             address: props.address ?? '',
           })
 
-          reset({
-            name: '',
-            address: '',
-            ruc: '',
-          })
-          emptyFormFields()
-          navigate(routes.agencies.home.path)
+          onClose()
 
           addToast({
             color: 'success',
@@ -113,15 +115,7 @@ const AgencyForm = () => {
           ruc: props.ruc ?? '',
         })
 
-        reset({
-          name: '',
-          address: '',
-          ruc: '',
-        })
-        emptyFormFields()
-        navigate(routes.agencies.home.path + `?page=${currentPage}`, {
-          replace: true,
-        })
+        onClose()
 
         addToast({
           color: 'success',
@@ -145,24 +139,14 @@ const AgencyForm = () => {
       }
     },
     [
-      emptyFormFields,
+      currentPage,
       formType,
       id,
-      reset,
-      meta,
-      setCurrentPage,
-      navigate,
       isSubmitting,
-      currentPage,
+      meta?.lastPage,
+      onClose,
+      setCurrentPage,
     ],
-  )
-
-  const handleChange = useCallback(
-    (key: keyof Inputs, value: string) => {
-      setFormFields((prev) => ({ ...prev, [key]: value }))
-      setValue(key, value)
-    },
-    [setFormFields, setValue],
   )
 
   useEffect(() => {
@@ -180,7 +164,7 @@ const AgencyForm = () => {
       form={form}
       onSubmit={onSubmit}
       redirectTo={preserveParams(routes.agencies.home.path)}
-      onClose={handleClose}
+      onClose={onClose}
     >
       <FormModal.Header>
         {formType === FormType.ADD ? 'Agregar Agencia' : 'Editar Agencia'}
@@ -194,11 +178,11 @@ const AgencyForm = () => {
         />
       </FormModal.Body>
       <FormModal.Footer>
-        {({ onClose }) => (
+        {({ onClose: modalClose }) => (
           <FormAgenciesFooter
             onClose={() => {
+              modalClose()
               onClose()
-              handleClose()
             }}
             type={formType}
           />
