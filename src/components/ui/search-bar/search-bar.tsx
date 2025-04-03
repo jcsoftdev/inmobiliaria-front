@@ -21,7 +21,6 @@ export const SearchBar = ({
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const [localValue, setLocalValue] = useState(value)
   const debouncedValue = useDebounce(localValue, 500)
-
   useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus()
@@ -30,7 +29,7 @@ export const SearchBar = ({
 
   useEffect(() => {
     onChange(debouncedValue)
-  }, [debouncedValue, onChange])
+  }, [debouncedValue, onChange, value])
 
   return (
     <div className="flex-1 flex justify-center text-primary">

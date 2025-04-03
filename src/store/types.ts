@@ -68,6 +68,8 @@ export type UsersState = {
 export type CompaniesState = {
   data?: CompaniesResponse['data']
   meta?: CompaniesResponse['meta']
+  search?: string
+  lastSearch?: string
   isLoading?: boolean
   isError?: boolean
   formFields: {

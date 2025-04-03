@@ -19,9 +19,13 @@ import EmptyState from '@components/ui/empty-state'
 import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
+import { Data } from '@contracts/companies.response'
+
 import { deleteCompany } from '@services/companies'
 
 import { eventBus } from '@utils/publisher'
+
+import { useCompaniesStore } from '@store/companies.store'
 
 import { getDynamicRoute, routes } from '@router/routes'
 
@@ -39,12 +43,19 @@ const CompanyList = () => {
   const { page, setCurrentPage } = usePaginator()
   const navigate = useNavigate()
   const location = useLocation()
-
-  const { error, isLoading, companies, meta, refetch, isFetching } =
-    useGetCompanies({
-      currentPage: +page,
-      enabled: true,
-    })
+  const search = useCompaniesStore((state) => state.search)
+  const {
+    error,
+    isLoading,
+    companies,
+    meta,
+    refetch,
+    isFetching,
+    setCompanies,
+  } = useGetCompanies({
+    currentPage: +page,
+    enabled: true,
+  })
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -56,6 +67,9 @@ const CompanyList = () => {
   }, [refetch])
 
   const handleDelete = (id: string, extraInfo?: string) => {
+    const filterCompany =
+      companies?.filter((company) => company.id !== id) ?? ([] as Data[])
+
     alert.fire({
       title: 'Eliminar Empresa',
       message: (
@@ -69,9 +83,15 @@ const CompanyList = () => {
       showCancelButton: true,
       onConfirm: () => {
         deleteCompany(id).then(() => {
+          if (!filterCompany.length) {
+            setCurrentPage(Math.max(1, +page - 1))
+          }
           addToast({
             color: 'warning',
             title: 'Empresa eliminada',
+          })
+          setCompanies({
+            data: filterCompany,
           })
           refetch()
         })
@@ -96,15 +116,26 @@ const CompanyList = () => {
   if (!companies?.length && !isLoading && !error) {
     return (
       <EmptyState
-        title="No hay empresas registradas"
-        description="Comienza creando una nueva empresa para gestionar tus propiedades."
-        action={{
-          label: 'Crear Empresa',
-          onClick: () => {
-            console.log('Crear empresa')
-            navigate(getDynamicRoute(routes.companies.register.path, {}))
-          },
-        }}
+        title={
+          search?.length
+            ? 'No se encontraron resultados'
+            : 'No hay empresas registradas'
+        }
+        description={
+          search?.length
+            ? 'Intenta con otra búsqueda'
+            : 'Agrega una empresa para comenzar a gestionar tus datos'
+        }
+        action={
+          !search?.length
+            ? {
+                label: 'Crear Empresa',
+                onClick: () => {
+                  navigate(getDynamicRoute(routes.companies.register.path, {}))
+                },
+              }
+            : undefined
+        }
       />
     )
   }

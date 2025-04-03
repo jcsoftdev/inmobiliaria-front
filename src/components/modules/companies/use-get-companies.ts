@@ -24,6 +24,8 @@ export const useGetCompanies = ({
   const setIsLoading = useCompaniesStore((state) => state.setIsLoading)
   const isLoading = useCompaniesStore((state) => state.isLoading)
   const companies = useCompaniesStore((state) => state.data)
+  const search = useCompaniesStore((state) => state.search)
+  const setLastSearch = useCompaniesStore((state) => state.setLastSearch)
   const meta = useCompaniesStore((state) => state.meta)
   const perPage = 8
 
@@ -35,13 +37,16 @@ export const useGetCompanies = ({
     isFetching,
     isRefetching,
   } = useQuery<CompaniesResponse>({
-    queryKey: ['companies', currentPage],
-    queryFn: () => getCompanies({ perPage, page: currentPage }),
+    queryKey: ['companies', currentPage, search],
+    queryFn: () => getCompanies({ perPage, page: currentPage, search }),
     enabled,
   })
   useEffect(() => {
-    if (data) setCompanies(data)
-  }, [data, setCompanies])
+    if (data) {
+      setCompanies(data)
+      setLastSearch(search ?? '')
+    }
+  }, [data, search, setCompanies, setLastSearch])
 
   useEffect(() => {
     setIsLoading(loading)
@@ -52,6 +57,7 @@ export const useGetCompanies = ({
     refetch({
       ...options,
     }).then(() => {
+      setLastSearch(search ?? '')
       if (witLoader) setIsLoading(false)
     })
   }
@@ -63,5 +69,6 @@ export const useGetCompanies = ({
     isLoading,
     refetch: refetchCompanies,
     isFetching: isFetching || isRefetching,
+    setCompanies,
   }
 }
