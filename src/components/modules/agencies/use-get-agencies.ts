@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
+import { RefetchOptions, useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 import { AgenciesResponse } from '@contracts/agencies.response'
 
@@ -7,49 +7,75 @@ import { getAgencies } from '@services/agencies'
 
 import { useAgenciesStore } from '@store/agencies.store'
 
-interface UseGetPropertiesParams {
+interface UseGetAgenciesParams {
   currentPage: number
-  q?: string
+  enabled?: boolean
 }
 
-export const useGetAgencies = ({ currentPage, q }: UseGetPropertiesParams) => {
-  const SetAgencies = useAgenciesStore((state) => state.setAgencies)
+interface Options extends RefetchOptions {
+  witLoader?: boolean
+}
+
+export const useGetAgencies = ({
+  currentPage,
+  enabled = false,
+}: UseGetAgenciesParams) => {
+  const setAgencies = useAgenciesStore((state) => state.setAgencies)
+  const setIsLoading = useAgenciesStore((state) => state.setIsLoading)
+  const isLoading = useAgenciesStore((state) => state.isLoading)
+  const agencies = useAgenciesStore((state) => state.data)
+  const search = useAgenciesStore((state) => state.search)
+  const setLastSearch = useAgenciesStore((state) => state.setLastSearch)
+  const meta = useAgenciesStore((state) => state.meta)
   const perPage = 8
 
-  const queryKey = ['agencies', currentPage, q]
-
-  const queryFn = useCallback(
-    () => getAgencies({ perPage, page: currentPage, q }),
-    [currentPage, q, perPage],
-  )
-
-  const { data, error, isLoading, refetch, isFetching, isRefetching } =
-    useQuery<AgenciesResponse>({
-      queryKey,
-      queryFn,
-      enabled: true,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      retry: 1,
-    })
+  const {
+    data,
+    error,
+    isLoading: loading,
+    refetch,
+    isFetching,
+    isRefetching,
+  } = useQuery<AgenciesResponse>({
+    queryKey: ['agencies', currentPage, search],
+    queryFn: () => getAgencies({ perPage, page: currentPage, q: search }),
+    enabled,
+  })
 
   useEffect(() => {
     if (data) {
-      SetAgencies({
+      setAgencies({
         data: data.data,
         meta: data.meta,
         currentPage,
         isLoading,
         isError: false,
       })
+      setLastSearch(search ?? '')
     }
-  }, [data, SetAgencies, currentPage, isLoading])
+  }, [data, search, setAgencies, setLastSearch, currentPage, isLoading])
+
+  useEffect(() => {
+    setIsLoading(loading)
+  }, [loading, setIsLoading])
+
+  const refetchAgencies = ({ witLoader, ...options }: Options = {}) => {
+    if (witLoader && !agencies?.length) setIsLoading(true)
+    refetch({
+      ...options,
+    }).then(() => {
+      setLastSearch(search ?? '')
+      if (witLoader) setIsLoading(false)
+    })
+  }
 
   return {
     agencies: data,
+    meta,
     error,
     isLoading,
-    refetch,
+    refetch: refetchAgencies,
     isFetching: isFetching || isRefetching,
+    setAgencies,
   }
 }

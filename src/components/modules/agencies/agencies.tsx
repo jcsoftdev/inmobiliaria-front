@@ -1,5 +1,5 @@
 import { Button } from '@heroui/button'
-import { useState, useRef } from 'react'
+import { useCallback } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
 
 import { SearchBar } from '@components/ui/search-bar'
@@ -18,26 +18,20 @@ export const Agencies = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { getPath } = useNavigationPath()
-  const { setCurrentPage, page } = usePaginator()
-  const [searchTerm, setSearchTerm] = useState('')
-  const lastPage = useRef(page)
-  const agencies = useAgenciesStore((state) => state.data)
-  const hasAgencies = (agencies?.length ?? 0) > 0
+  const { setCurrentPage } = usePaginator()
+  const search = useAgenciesStore((state) => state.search)
+  const setSearch = useAgenciesStore((state) => state.setSearch)
+  const lastSearch = useAgenciesStore((state) => state.lastSearch)
 
-  const handleSearch = (value: string) => {
-    if (value !== searchTerm) {
-      if (!value) {
-        setCurrentPage(1)
-      } else if (!searchTerm) {
-        lastPage.current = page
-        setCurrentPage(1)
-      } else if (value) {
+  const handleSearch = useCallback(
+    (value: string) => {
+      if (value !== lastSearch) {
         setCurrentPage(1)
       }
-    }
-
-    setSearchTerm(value)
-  }
+      setSearch(value)
+    },
+    [lastSearch, setCurrentPage, setSearch],
+  )
 
   const handleAddAgency = () => {
     const { to, state } = getPath(
@@ -54,22 +48,18 @@ export const Agencies = () => {
         <div className="flex gap-20">
           <h2 className="text-2xl">Agencias</h2>
 
-          {hasAgencies && (
-            <SearchBar
-              placeholder="Buscar agencia"
-              value={searchTerm}
-              onChange={handleSearch}
-            />
-          )}
+          <SearchBar
+            placeholder="Buscar agencia"
+            value={search ?? ''}
+            onChange={handleSearch}
+          />
         </div>
-        {hasAgencies && (
-          <Button color="primary" onPress={handleAddAgency}>
-            Agregar
-          </Button>
-        )}
+        <Button color="primary" onPress={handleAddAgency}>
+          Agregar
+        </Button>
       </div>
 
-      <AgenciesList searchTerm={searchTerm} />
+      <AgenciesList />
       <Outlet />
     </div>
   )

@@ -25,6 +25,8 @@ export type AgenciesState = {
   isLoading?: boolean
   isError?: boolean
   currentPage?: number
+  search?: string
+  lastSearch?: string
   formFields: {
     name?: string
     address?: string

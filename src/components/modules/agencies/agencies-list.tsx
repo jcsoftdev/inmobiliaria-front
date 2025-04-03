@@ -36,24 +36,20 @@ import { tableColumns } from '../properties/constants'
 import { AGENCY_REGISTERED_REFETCH_KEY, tableAgencyColumns } from './constants'
 import { useGetAgencies } from './use-get-agencies'
 
-interface AgencyListProps {
-  searchTerm: string
-}
-
-const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
+const AgencyList: React.FC = memo(() => {
   const { page, setCurrentPage } = usePaginator()
   const navigate = useNavigate()
   const location = useLocation()
   const { getPath } = useNavigationPath()
   const setEditingAgency = useAgenciesStore((state) => state.setEditingAgency)
+  const search = useAgenciesStore((state) => state.search)
 
   const memoizedProps = useMemo(
     () => ({
       currentPage: +page,
       enabled: true,
-      q: searchTerm,
     }),
-    [page, searchTerm],
+    [page],
   )
 
   const { error, isLoading, agencies, refetch, isFetching } =
@@ -89,7 +85,7 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
             addToast({ color: 'warning', title: 'Agencia eliminada' })
 
             if (page > 1 && currentPageAgencies.length <= 1) {
-              const newPage = searchTerm ? page - 1 : 1
+              const newPage = search ? page - 1 : 1
               await new Promise<void>((resolve) => {
                 setCurrentPage(newPage)
                 setTimeout(resolve, 100)
@@ -114,7 +110,7 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
         onCancel: () => {},
       })
     },
-    [refetch, page, currentPageAgencies.length, setCurrentPage, searchTerm],
+    [refetch, page, currentPageAgencies.length, setCurrentPage, search],
   )
 
   useEffect(() => {
@@ -148,7 +144,7 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
   )
 
   const showEmptyMessage = currentPageAgencies.length === 0
-  const isFiltering = Boolean(searchTerm)
+  const isFiltering = Boolean(search)
   const hasAgencies = (agencies?.meta?.total ?? 0) > 0
   const showSkeleton = isLoading && !agencies
 
@@ -164,17 +160,17 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
     return (
       <EmptyState
         title={
-          searchTerm
+          search
             ? 'No se encontraron resultados'
             : 'No hay agencias registradas'
         }
         description={
-          searchTerm
+          search
             ? 'Intenta con otra búsqueda'
             : 'Agrega una agencia para comenzar a gestionar tus datos'
         }
         action={
-          !searchTerm
+          !search
             ? {
                 label: 'Crear Agencia',
                 onClick: () => {
@@ -207,7 +203,7 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
               )}
             </TableHeader>
             <TableBody items={currentPageAgencies}>
-              {(agency) => (
+              {(agency: Data) => (
                 <TableRow key={agency.id}>
                   {(columnKey) => (
                     <TableCell key={columnKey}>
