@@ -6,6 +6,8 @@ import { SearchBar } from '@components/ui/search-bar'
 
 import { useNavigationPath } from '@utils/navigation'
 
+import { useAgenciesStore } from '@store/agencies.store'
+
 import { routes } from '@router/routes'
 
 import { usePaginator } from '@hooks/use-paginator'
@@ -19,6 +21,8 @@ export const Agencies = () => {
   const { setCurrentPage, page } = usePaginator()
   const [searchTerm, setSearchTerm] = useState('')
   const lastPage = useRef(page)
+  const agencies = useAgenciesStore((state) => state.data)
+  const hasAgencies = (agencies?.length ?? 0) > 0
 
   const handleSearch = (value: string) => {
     if (value !== searchTerm) {
@@ -45,26 +49,29 @@ export const Agencies = () => {
   }
 
   return (
-    <>
-      <div className="flex justify-between items-center mt-10">
-        <h2 className="text-2xl">Agencias</h2>
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between mt-10">
+        <div className="flex gap-20">
+          <h2 className="text-2xl">Agencias</h2>
 
-        <div className="flex justify-between items-center w-full">
-          <SearchBar
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder="Buscar Agencia..."
-          />
-
+          {hasAgencies && (
+            <SearchBar
+              placeholder="Buscar agencia"
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+          )}
+        </div>
+        {hasAgencies && (
           <Button color="primary" onPress={handleAddAgency}>
             Agregar
           </Button>
-        </div>
+        )}
       </div>
 
       <AgenciesList searchTerm={searchTerm} />
       <Outlet />
-    </>
+    </div>
   )
 }
 

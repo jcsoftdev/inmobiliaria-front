@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router'
 import Edit from '@components/icons/edit'
 import Trash from '@components/icons/trash'
 import { alert } from '@components/ui/alert'
+import EmptyState from '@components/ui/empty-state'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
 import { Data } from '@contracts/agencies.response'
@@ -157,6 +158,38 @@ const AgencyList: React.FC<AgencyListProps> = memo(({ searchTerm }) => {
 
   if (error) {
     return <p>Error: {error.message}</p>
+  }
+
+  if (!currentPageAgencies.length && !isLoading && !error) {
+    return (
+      <EmptyState
+        title={
+          searchTerm
+            ? 'No se encontraron resultados'
+            : 'No hay agencias registradas'
+        }
+        description={
+          searchTerm
+            ? 'Intenta con otra búsqueda'
+            : 'Agrega una agencia para comenzar a gestionar tus datos'
+        }
+        action={
+          !searchTerm
+            ? {
+                label: 'Crear Agencia',
+                onClick: () => {
+                  const { to, state } = getPath(
+                    routes.agencies.register.path,
+                    {},
+                    { background: location },
+                  )
+                  navigate(to, { state })
+                },
+              }
+            : undefined
+        }
+      />
+    )
   }
 
   return (
