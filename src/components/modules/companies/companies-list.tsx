@@ -74,15 +74,17 @@ const CompanyList = () => {
       showCancelButton: true,
       onConfirm: () => {
         const actual = deleteFromCompanies(id)
-        if (!actual?.length) {
-          setCurrentPage(Math.max(1, +page - 1))
-        }
+
         deleteCompany(id)
           .then(() => {
             addToast({
               color: 'success',
               title: 'Empresa eliminada',
             })
+            if (!actual?.length && +page > 1) {
+              setCurrentPage(Math.max(1, +page - 1))
+              return
+            }
             refetch()
           })
           .catch((error) => {
@@ -111,7 +113,18 @@ const CompanyList = () => {
     )
   }
 
-  if (!companies?.length && !isLoading && !error) {
+  if (
+    (!companies?.length &&
+      !isLoading &&
+      !error &&
+      +page > +(meta?.lastPage ?? 0)) ??
+    0
+  ) {
+    setCurrentPage(meta?.lastPage ?? 1)
+    return <SkeletonTable columns={8} tableColumns={tableColumns} hasActions />
+  }
+
+  if (!companies?.length && !isLoading && !error && +page === 1) {
     return (
       <EmptyState
         title={
