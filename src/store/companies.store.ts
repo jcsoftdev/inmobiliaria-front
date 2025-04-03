@@ -57,6 +57,24 @@ export const createSetters = (
       false,
       'company/emptyFormFields',
     ),
+  setIsLoading: (isLoading: boolean) =>
+    set(
+      (prev) => ({
+        ...prev,
+        isLoading,
+      }),
+      false,
+      'company/setIsLoading',
+    ),
+  setIsError: (isError: boolean) =>
+    set(
+      (prev) => ({
+        ...prev,
+        isError,
+      }),
+      false,
+      'company/setIsError',
+    ),
 })
 
 export const initialCompaniesState: CompaniesState = {
