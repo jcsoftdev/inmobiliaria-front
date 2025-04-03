@@ -98,6 +98,8 @@ export const createSetters = (
       (prev) => ({
         ...prev,
         data: prev.data?.filter((company) => company.id !== id),
+        isLoading:
+          prev.data?.filter((company) => company.id !== id).length === 0,
       }),
       false,
       'company/deleteFromCompanies',
