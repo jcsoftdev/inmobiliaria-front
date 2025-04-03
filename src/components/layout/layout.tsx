@@ -60,7 +60,7 @@ const Layout = ({
       <Sidebar {...sidebarProps} />
       <Header {...headerProps} />
       <div
-        className="bg-gray-100 text-center p-4 md:px-10 overflow-scroll"
+        className="bg-gray-100 text-center p-4 md:px-10 overflow-scroll flex flex-col"
         style={{ gridArea: 'main' }}
       >
         <div className="max-w-[70vw] mx-auto">{children}</div>

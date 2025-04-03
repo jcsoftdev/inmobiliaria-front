@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router'
 import Edit from '@components/icons/edit'
 import Trash from '@components/icons/trash'
 import { alert } from '@components/ui/alert'
+import EmptyState from '@components/ui/empty-state'
 import { SkeletonPagination } from '@components/ui/skeletons/skeleton-pagination'
 import { SkeletonTable } from '@components/ui/skeletons/skeleton-table'
 
@@ -39,14 +40,15 @@ const CompanyList = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { error, isLoading, companies, refetch, isFetching } = useGetCompanies({
-    currentPage: +page,
-    enabled: true,
-  })
+  const { error, isLoading, companies, meta, refetch, isFetching } =
+    useGetCompanies({
+      currentPage: +page,
+      enabled: true,
+    })
 
   useEffect(() => {
     const handleUpdate = () => {
-      refetch()
+      refetch({ witLoader: true })
     }
     eventBus.on(COMPANY_REGISTERED_REFETCH_KEY, handleUpdate)
 
@@ -91,6 +93,22 @@ const CompanyList = () => {
     )
   }
 
+  if (!companies?.length && !isLoading && !error) {
+    return (
+      <EmptyState
+        title="No hay empresas registradas"
+        description="Comienza creando una nueva empresa para gestionar tus propiedades."
+        action={{
+          label: 'Crear Empresa',
+          onClick: () => {
+            console.log('Crear empresa')
+            navigate(getDynamicRoute(routes.companies.register.path, {}))
+          },
+        }}
+      />
+    )
+  }
+
   return (
     <div className="">
       <Table aria-label="Empresas" className="pt-4">
@@ -99,7 +117,7 @@ const CompanyList = () => {
             return <TableColumn key={column.key}>{column.title}</TableColumn>
           }}
         </TableHeader>
-        <TableBody items={companies?.data}>
+        <TableBody items={companies}>
           {(company) => {
             return (
               <TableRow key={company.id}>
@@ -155,12 +173,12 @@ const CompanyList = () => {
           <Pagination
             color="primary"
             page={+page}
-            total={+(companies?.meta?.lastPage ?? 0)}
+            total={+(meta?.lastPage ?? 0)}
             onChange={setCurrentPage}
           />
         </div>
       ) : (
-        <SkeletonPagination total={+(companies?.meta?.lastPage ?? 0)} />
+        <SkeletonPagination total={+(meta?.lastPage ?? 0)} />
       )}
     </div>
   )

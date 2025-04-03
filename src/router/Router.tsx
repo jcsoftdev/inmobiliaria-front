@@ -156,11 +156,7 @@ const RouteGuard = ({
   }
 
   if (user === null) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-sky-700"></div>
-      </div>
-    )
+    return null
   }
 
   if (!token) {
@@ -249,9 +245,14 @@ export const Router = () => {
             <Route
               path="register"
               element={
-                <RouteGuard allowedRoles={routes.properties.register.roles}>
-                  <PropertyForm />
-                </RouteGuard>
+                <CachedSuspense
+                  fallback={<FallbackLoader />}
+                  componentKey={'properties-register'}
+                >
+                  <RouteGuard allowedRoles={routes.properties.register.roles}>
+                    <PropertyForm />
+                  </RouteGuard>
+                </CachedSuspense>
               }
             />
             <Route
@@ -268,17 +269,12 @@ export const Router = () => {
           <Route
             path={routes.agencies.home.path}
             element={
-              <CachedSuspense
-                fallback={<FallbackLoader />}
-                componentKey={'agencies'}
+              <RouteGuard
+                allowedRoles={routes.agencies.home.roles}
+                validation={routes.agencies.home.validation}
               >
-                <RouteGuard
-                  allowedRoles={routes.agencies.home.roles}
-                  validation={routes.agencies.home.validation}
-                >
-                  <AgenciesModule />
-                </RouteGuard>
-              </CachedSuspense>
+                <AgenciesModule />
+              </RouteGuard>
             }
           >
             <Route index element={null} />
@@ -362,24 +358,35 @@ export const Router = () => {
           </Route>
 
           {/* Companies routes */}
-          <Route path={routes.companies.home.path}>
-            <Route
-              index
-              element={
+          <Route
+            path={routes.companies.home.path}
+            element={
+              <CachedSuspense
+                fallback={<FallbackLoader />}
+                componentKey={'companies'}
+              >
                 <RouteGuard
                   allowedRoles={routes.companies.home.roles}
                   validation={routes.companies.home.validation}
                 >
                   <CompaniesModule />
                 </RouteGuard>
-              }
-            />
+              </CachedSuspense>
+            }
+          >
+            <Route index element={null} />
+
             <Route
               path="register"
               element={
-                <RouteGuard allowedRoles={routes.companies.register.roles}>
-                  <CompaniesForm />
-                </RouteGuard>
+                <CachedSuspense
+                  fallback={<FallbackLoader />}
+                  componentKey="companies-form"
+                >
+                  <RouteGuard allowedRoles={routes.companies.register.roles}>
+                    <CompaniesForm />
+                  </RouteGuard>
+                </CachedSuspense>
               }
             />
             <Route
