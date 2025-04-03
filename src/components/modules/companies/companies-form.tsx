@@ -137,7 +137,6 @@ const CompaniesForm = () => {
       </FormModal.Body>
       <FormModal.Footer>
         {({ onClose }) => {
-          console.log({ onClose })
           return <FormCompaniesFooter onClose={onClose} type={formType} />
         }}
       </FormModal.Footer>
