@@ -1,10 +1,12 @@
 import { Button } from '@heroui/button'
-import { useState, useRef } from 'react'
+import { useCallback } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router'
 
 import { SearchBar } from '@components/ui/search-bar'
 
 import { useNavigationPath } from '@utils/navigation'
+
+import { useAgenciesStore } from '@store/agencies.store'
 
 import { routes } from '@router/routes'
 
@@ -16,22 +18,20 @@ export const Agencies = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { getPath } = useNavigationPath()
-  const { setCurrentPage, page } = usePaginator()
-  const [searchTerm, setSearchTerm] = useState('')
-  const lastPage = useRef(page)
+  const { setCurrentPage } = usePaginator()
+  const search = useAgenciesStore((state) => state.search)
+  const setSearch = useAgenciesStore((state) => state.setSearch)
+  const lastSearch = useAgenciesStore((state) => state.lastSearch)
 
-  const handleSearch = (value: string) => {
-    if (!searchTerm && value) {
-      lastPage.current = page
-      setCurrentPage(1)
-    } else if (searchTerm && !value) {
-      setCurrentPage(lastPage.current)
-    } else if (value !== searchTerm && value) {
-      setCurrentPage(1)
-    }
-
-    setSearchTerm(value)
-  }
+  const handleSearch = useCallback(
+    (value: string) => {
+      if (value !== lastSearch) {
+        setCurrentPage(1)
+      }
+      setSearch(value)
+    },
+    [lastSearch, setCurrentPage, setSearch],
+  )
 
   const handleAddAgency = () => {
     const { to, state } = getPath(
@@ -43,26 +43,25 @@ export const Agencies = () => {
   }
 
   return (
-    <>
-      <div className="flex justify-between items-center mt-10">
-        <h2 className="text-2xl">Agencias</h2>
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between mt-10">
+        <div className="flex gap-20">
+          <h2 className="text-2xl">Agencias</h2>
 
-        <div className="flex justify-between items-center w-full">
           <SearchBar
-            value={searchTerm}
+            placeholder="Buscar agencia"
+            value={search ?? ''}
             onChange={handleSearch}
-            placeholder="Buscar Agencia..."
           />
-
-          <Button color="primary" onPress={handleAddAgency}>
-            Agregar
-          </Button>
         </div>
+        <Button color="primary" onPress={handleAddAgency}>
+          Agregar
+        </Button>
       </div>
 
-      <AgenciesList searchTerm={searchTerm} />
+      <AgenciesList />
       <Outlet />
-    </>
+    </div>
   )
 }
 

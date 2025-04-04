@@ -11,6 +11,12 @@ export const createSetters = (
   setAgencies: (data: Partial<AgenciesState>) =>
     set(
       (prev) => {
+        if (data.data) {
+          return {
+            ...prev,
+            ...data,
+          }
+        }
         return {
           ...prev,
           ...data,
@@ -18,6 +24,33 @@ export const createSetters = (
       },
       false,
       'agencies/setAgencies',
+    ),
+  setIsLoading: (isLoading: boolean) =>
+    set(
+      (prev) => ({
+        ...prev,
+        isLoading,
+      }),
+      false,
+      'agencies/setIsLoading',
+    ),
+  setSearch: (search: string) =>
+    set(
+      (prev) => ({
+        ...prev,
+        search,
+      }),
+      false,
+      'agencies/setSearch',
+    ),
+  setLastSearch: (lastSearch: string) =>
+    set(
+      (prev) => ({
+        ...prev,
+        lastSearch,
+      }),
+      false,
+      'agencies/setLastSearch',
     ),
   setFormFields: (
     data:
@@ -71,6 +104,8 @@ export const initialAgenciesState: AgenciesState = {
   isError: false,
   meta: undefined,
   data: [],
+  search: undefined,
+  lastSearch: undefined,
   formFields: {
     name: '',
     address: '',

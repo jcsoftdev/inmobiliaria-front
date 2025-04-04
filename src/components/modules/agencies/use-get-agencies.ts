@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useCallback, useRef } from 'react'
+import { RefetchOptions, useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 import { AgenciesResponse } from '@contracts/agencies.response'
 
@@ -7,75 +7,75 @@ import { getAgencies } from '@services/agencies'
 
 import { useAgenciesStore } from '@store/agencies.store'
 
-interface UseGetPropertiesParams {
+interface UseGetAgenciesParams {
   currentPage: number
-  q?: string
   enabled?: boolean
+}
+
+interface Options extends RefetchOptions {
+  witLoader?: boolean
 }
 
 export const useGetAgencies = ({
   currentPage,
-  q,
   enabled = false,
-}: UseGetPropertiesParams) => {
-  const SetAgencies = useAgenciesStore((state) => state.setAgencies)
+}: UseGetAgenciesParams) => {
+  const setAgencies = useAgenciesStore((state) => state.setAgencies)
+  const setIsLoading = useAgenciesStore((state) => state.setIsLoading)
+  const isLoading = useAgenciesStore((state) => state.isLoading)
+  const agencies = useAgenciesStore((state) => state.data)
+  const search = useAgenciesStore((state) => state.search)
+  const setLastSearch = useAgenciesStore((state) => state.setLastSearch)
+  const meta = useAgenciesStore((state) => state.meta)
   const perPage = 8
-  const isInitialMount = useRef(true)
-  const previousData = useRef<AgenciesResponse | null>(null)
-  const updateTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  const queryKey = ['agencies', currentPage, q]
-
-  const queryFn = useCallback(
-    () => getAgencies({ perPage, page: currentPage, q }),
-    [currentPage, q, perPage],
-  )
-
-  const { data, error, isLoading, refetch, isFetching, isRefetching } =
-    useQuery<AgenciesResponse>({
-      queryKey,
-      queryFn,
-      enabled,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      retry: false,
-      refetchOnReconnect: false,
-      networkMode: 'offlineFirst',
-    })
+  const {
+    data,
+    error,
+    isLoading: loading,
+    refetch,
+    isFetching,
+    isRefetching,
+  } = useQuery<AgenciesResponse>({
+    queryKey: ['agencies', currentPage, search],
+    queryFn: () => getAgencies({ perPage, page: currentPage, q: search }),
+    enabled,
+  })
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      return
+    if (data) {
+      setAgencies({
+        data: data.data,
+        meta: data.meta,
+        currentPage,
+        isLoading,
+        isError: false,
+      })
+      setLastSearch(search ?? '')
     }
+  }, [data, search, setAgencies, setLastSearch, currentPage, isLoading])
 
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current)
-    }
+  useEffect(() => {
+    setIsLoading(loading)
+  }, [loading, setIsLoading])
 
-    if (data && !isFetching && data !== previousData.current) {
-      updateTimeoutRef.current = setTimeout(() => {
-        previousData.current = data
-        SetAgencies({
-          data: data.data,
-          meta: data.meta,
-          currentPage,
-        })
-      }, 0)
-    }
-
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current)
-      }
-    }
-  }, [data, SetAgencies, currentPage, isFetching])
+  const refetchAgencies = ({ witLoader, ...options }: Options = {}) => {
+    if (witLoader && !agencies?.length) setIsLoading(true)
+    refetch({
+      ...options,
+    }).then(() => {
+      setLastSearch(search ?? '')
+      if (witLoader) setIsLoading(false)
+    })
+  }
 
   return {
     agencies: data,
+    meta,
     error,
     isLoading,
-    refetch,
+    refetch: refetchAgencies,
     isFetching: isFetching || isRefetching,
+    setAgencies,
   }
 }
